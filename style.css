@@ -1,0 +1,48 @@
+/* Seleciona o corpo da página. */
+body {
+    /* Define a cor de fundo. */
+    background-color: #17251f;
+
+    /* Define a cor padrão dos textos. */
+    color: #f5f5f5;
+
+    /* Usa Arial ou, se ela estiver indisponível, outra fonte sem serifa. */
+    font-family: Arial, sans-serif;
+
+    /* Cria um espaço interno entre as bordas do body e seu conteúdo. */
+    padding: 60px;
+}
+
+/* Seleciona os títulos h1 da página. */
+h1 {
+    /* Define a cor do texto do título principal. */
+    color: #8be070;
+}
+#nome-item {
+    padding: 10px;
+    border: 1px solid #6d8976;
+    border-radius: 16px;
+    font-size: 16px;
+}
+
+#adicionar-item, #remover-ultimo {
+    padding: 10px 16px;
+    background-color: #8be070;
+    color: #17251f;
+    border: none;
+    border-radius: 16px;
+    font-size: 16px;
+    cursor: pointer;
+}
+#lista-itens {
+    list-style: none;
+    padding: 0;
+    max-width: 300px;
+}
+
+#lista-itens li {
+    background-color: #24392d;
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+}
