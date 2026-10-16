@@ -70,3 +70,7 @@ h1 {
 #lista-itens button:hover {
     background-color: #e78b8b;
 }
+#mensagem-item {
+    color: #f0a5a5;
+    font-size: 14px;
+}

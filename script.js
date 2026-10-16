@@ -2,16 +2,20 @@ const campoNome = document.getElementById("nome-item");
 const botaoAdicionar = document.getElementById("adicionar-item");
 const listaItens = document.getElementById("lista-itens");
 const totalItens = document.getElementById("total-itens");
+const mensagemItem = document.getElementById("mensagem-item");
 
 function adicionarItem() {
     const nome = campoNome.value.trim();
 
     if (nome === "") {
+        mensagemItem.textContent = "Digite o nome de um item.";
+        campoNome.focus();
         return;
     }
 
-    criarItem(nome);
+    mensagemItem.textContent = "";
 
+    criarItem(nome);
     atualizarTotal();
     salvarInventario();
 
