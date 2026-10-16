@@ -19,7 +19,8 @@ h1 {
     color: #8be070;
 }
 #nome-item,
-#buscar-item {
+#buscar-item,
+#quantidade-item {
     padding: 10px;
     border: 1px solid #6d8976;
     border-radius: 16px;
@@ -78,4 +79,14 @@ h1 {
 #remover-ultimo:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+#quantidade-item {
+    width: 80px;
+}
+#lista-itens .quantidade-exibida {
+    flex: 0 0 auto;
+    padding: 4px 8px;
+    background-color: #17251f;
+    color: #8be070;
+    border-radius: 6px;
 }

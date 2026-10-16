@@ -4,9 +4,11 @@ const listaItens = document.getElementById("lista-itens");
 const totalItens = document.getElementById("total-itens");
 const mensagemItem = document.getElementById("mensagem-item");
 const campoBusca = document.getElementById("buscar-item");
+const campoQuantidade = document.getElementById("quantidade-item");
 
 function adicionarItem() {
     const nome = campoNome.value.trim();
+    const quantidade = Number(campoQuantidade.value);
 
     if (nome === "") {
         mensagemItem.textContent = "Digite o nome de um item.";
@@ -14,14 +16,26 @@ function adicionarItem() {
         return;
     }
 
+    if (Number.isInteger(quantidade) === false || quantidade < 1) {
+        mensagemItem.textContent = "Digite uma quantidade inteira ou maior que zero.";
+        campoQuantidade.focus();
+        return;
+    }
+
     mensagemItem.textContent = "";
 
-    criarItem(nome);
+    const item = {
+    nome: nome,
+    quantidade: quantidade
+};
+
+    criarItem(item);
     filtrarItens();
     atualizarTotal();
     salvarInventario();
 
     campoNome.value = "";
+    campoQuantidade.value = "1";
     campoNome.focus();
 }
 
@@ -60,14 +74,23 @@ function removerUltimoItem() {
 botaoRemoverUltimo.addEventListener("click", removerUltimoItem);
 
 function salvarInventario() {
-    const nomes = [];
+    const itens = [];
 
     for (const item of listaItens.children) {
-        const textoItem = item.querySelector("span");
-        nomes.push(textoItem.textContent);
+        const nome = item.querySelector("span").textContent;
+        const quantidade = Number(
+            item.querySelector(".quantidade-exibida").textContent
+        );
+
+        const itemSalvo = {
+            nome: nome,
+            quantidade: quantidade
+        };
+
+        itens.push(itemSalvo);
     }
 
-    const dados = JSON.stringify(nomes);
+    const dados = JSON.stringify(itens);
     localStorage.setItem("terraria-lulu-inventario", dados);
 }
 
@@ -78,21 +101,35 @@ function carregarInventario() {
         return;
     }
 
-    const nomes = JSON.parse(dados);
+    const itens = JSON.parse(dados);
 
     listaItens.textContent = "";
 
-    for (const nome of nomes) {
-        criarItem(nome);
+    for (const item of itens) {
+        if (typeof item === "string") {
+            const itemConvertido = {
+                nome: item,
+                quantidade: 1
+            };
+
+            criarItem(itemConvertido);
+        } else {
+            criarItem(item);
+        }
     }
 
     atualizarTotal();
 }
-function criarItem(nome) {
+
+function criarItem(item) {
     const novoItem = document.createElement("li");
 
     const textoItem = document.createElement("span");
-    textoItem.textContent = nome;
+    textoItem.textContent = item.nome;
+
+    const textoQuantidade = document.createElement("span");
+    textoQuantidade.className = "quantidade-exibida";
+    textoQuantidade.textContent = item.quantidade;
 
     const botaoRemover = document.createElement("button");
     botaoRemover.type = "button";
@@ -107,9 +144,11 @@ function criarItem(nome) {
     botaoRemover.addEventListener("click", removerEsteItem);
 
     novoItem.appendChild(textoItem);
+    novoItem.appendChild(textoQuantidade);
     novoItem.appendChild(botaoRemover);
     listaItens.appendChild(novoItem);
 }
+
 function filtrarItens() {
     const busca = campoBusca.value.trim().toLowerCase();
 

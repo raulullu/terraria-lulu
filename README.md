@@ -6,10 +6,12 @@ Projeto de estudo com HTML, CSS e JavaScript.
 ## Funcionalidades
 
 - Adicionar itens pelo botão ou pela tecla Enter.
+- Cadastrar quantidades inteiras maiores que zero.
+- Buscar itens pelo nome.
 - Remover itens individualmente.
-- Mostrar o total de itens.
-- Salvar o inventário no navegador.
-- Avisar quando o nome do item estiver vazio.
+- Mostrar o total de registros no inventário.
+- Salvar nomes e quantidades no navegador.
+- Validar o nome e a quantidade antes de adicionar.
 
 ## Como executar
 
