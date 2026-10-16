@@ -3,6 +3,7 @@ const botaoAdicionar = document.getElementById("adicionar-item");
 const listaItens = document.getElementById("lista-itens");
 const totalItens = document.getElementById("total-itens");
 const mensagemItem = document.getElementById("mensagem-item");
+const campoBusca = document.getElementById("buscar-item");
 
 function adicionarItem() {
     const nome = campoNome.value.trim();
@@ -16,6 +17,7 @@ function adicionarItem() {
     mensagemItem.textContent = "";
 
     criarItem(nome);
+    filtrarItens();
     atualizarTotal();
     salvarInventario();
 
@@ -108,4 +110,24 @@ function criarItem(nome) {
     novoItem.appendChild(botaoRemover);
     listaItens.appendChild(novoItem);
 }
+function filtrarItens() {
+    const busca = campoBusca.value.trim().toLowerCase();
+
+    botaoRemoverUltimo.disabled = busca !== "";
+
+    for (const item of listaItens.children) {
+        const textoItem = item.querySelector("span");
+        const nome = textoItem.textContent.toLowerCase();
+
+        if (nome.includes(busca)) {
+            item.style.display = "";
+        } else {
+            item.style.display = "none";
+        }
+    }
+}
+
+campoBusca.addEventListener("input", filtrarItens);
+
 carregarInventario();
+filtrarItens();

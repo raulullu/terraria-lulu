@@ -18,7 +18,8 @@ h1 {
     /* Define a cor do texto do título principal. */
     color: #8be070;
 }
-#nome-item {
+#nome-item,
+#buscar-item {
     padding: 10px;
     border: 1px solid #6d8976;
     border-radius: 16px;
@@ -73,4 +74,8 @@ h1 {
 #mensagem-item {
     color: #f0a5a5;
     font-size: 14px;
+}
+#remover-ultimo:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
