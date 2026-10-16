@@ -13,13 +13,16 @@ function adicionarItem() {
     const novoItem = document.createElement("li");
     novoItem.textContent = nome;
     listaItens.appendChild(novoItem);
+
     atualizarTotal();
     salvarInventario();
 
-campoNome.value = "";
+    campoNome.value = "";
+    campoNome.focus();
 }
 
 botaoAdicionar.addEventListener("click", adicionarItem);
+
 function verificarTecla(evento) {
     if (evento.key === "Enter") {
         adicionarItem();
@@ -27,12 +30,14 @@ function verificarTecla(evento) {
 }
 
 campoNome.addEventListener("keydown", verificarTecla);
+
 function atualizarTotal() {
     const quantidade = listaItens.children.length;
     totalItens.textContent = "Total de itens: " + quantidade;
 }
 
 atualizarTotal();
+
 const botaoRemoverUltimo = document.getElementById("remover-ultimo");
 
 function removerUltimoItem() {
@@ -43,6 +48,7 @@ function removerUltimoItem() {
     }
 
     ultimoItem.remove();
+
     atualizarTotal();
     salvarInventario();
 }
@@ -59,6 +65,7 @@ function salvarInventario() {
     const dados = JSON.stringify(nomes);
     localStorage.setItem("terraria-lulu-inventario", dados);
 }
+
 function carregarInventario() {
     const dados = localStorage.getItem("terraria-lulu-inventario");
 
