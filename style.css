@@ -34,10 +34,14 @@ h1 {
     font-size: 16px;
     cursor: pointer;
 }
-#lista-itens {
-    list-style: none;
-    padding: 0;
-    max-width: 300px;
+#lista-itens li {
+    background-color: #24392d;
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 #lista-itens li {
@@ -45,4 +49,24 @@ h1 {
     padding: 12px;
     margin-bottom: 8px;
     border-radius: 8px;
+}
+#lista-itens span {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+#lista-itens button {
+    flex-shrink: 0;
+    padding: 8px 12px;
+    background-color: #f0a5a5;
+    color: #17251f;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#lista-itens button:hover {
+    background-color: #e78b8b;
 }

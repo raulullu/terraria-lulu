@@ -10,9 +10,7 @@ function adicionarItem() {
         return;
     }
 
-    const novoItem = document.createElement("li");
-    novoItem.textContent = nome;
-    listaItens.appendChild(novoItem);
+    criarItem(nome);
 
     atualizarTotal();
     salvarInventario();
@@ -59,7 +57,8 @@ function salvarInventario() {
     const nomes = [];
 
     for (const item of listaItens.children) {
-        nomes.push(item.textContent);
+        const textoItem = item.querySelector("span");
+        nomes.push(textoItem.textContent);
     }
 
     const dados = JSON.stringify(nomes);
@@ -78,12 +77,31 @@ function carregarInventario() {
     listaItens.textContent = "";
 
     for (const nome of nomes) {
-        const novoItem = document.createElement("li");
-        novoItem.textContent = nome;
-        listaItens.appendChild(novoItem);
+        criarItem(nome);
     }
 
     atualizarTotal();
 }
+function criarItem(nome) {
+    const novoItem = document.createElement("li");
 
+    const textoItem = document.createElement("span");
+    textoItem.textContent = nome;
+
+    const botaoRemover = document.createElement("button");
+    botaoRemover.type = "button";
+    botaoRemover.textContent = "Remover";
+
+    function removerEsteItem() {
+        novoItem.remove();
+        atualizarTotal();
+        salvarInventario();
+    }
+
+    botaoRemover.addEventListener("click", removerEsteItem);
+
+    novoItem.appendChild(textoItem);
+    novoItem.appendChild(botaoRemover);
+    listaItens.appendChild(novoItem);
+}
 carregarInventario();
