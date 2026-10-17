@@ -289,8 +289,7 @@ function atualizarQuantidade() {
     const quantidade = Number(textoQuantidade.value);
 
     if (Number.isInteger(quantidade) === false || quantidade < 1) {
-        mensagemItem.textContent =
-            "Digite uma quantidade inteira maior que zero.";
+        mostrarErro("Digite uma quantidade inteira maior que zero.");
 
         textoQuantidade.value = item.quantidade;
         return;
@@ -302,6 +301,7 @@ function atualizarQuantidade() {
 
     atualizarTotal();
     salvarInventario();
+    mostrarSucesso("Quantidade atualizada: " + quantidade);
 }
 
 textoQuantidade.addEventListener("change", atualizarQuantidade);    
@@ -345,7 +345,7 @@ function renomearItem() {
     const novoNome = resposta.trim();
 
     if (novoNome === "") {
-        mensagemItem.textContent = "Digite um nome válido para o item.";
+        mostrarErro("Digite um nome válido para o item.");
         return;
     }
 
@@ -360,6 +360,7 @@ function renomearItem() {
 
     salvarInventario();
     filtrarItens();
+    mostrarSucesso("Item renomeado: " + novoNome);
     }
 
     botaoRenomear.addEventListener("click", renomearItem);
