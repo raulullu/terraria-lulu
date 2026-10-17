@@ -7,6 +7,7 @@ const campoBusca = document.getElementById("buscar-item");
 const campoQuantidade = document.getElementById("quantidade-item");
 const botaoRemoverUltimo = document.getElementById("remover-ultimo");
 const mensagemBusca = document.getElementById("mensagem-busca");
+const botaoOrdenar = document.getElementById("ordenar-itens");
 
 function adicionarItem() {
     const nome = campoNome.value.trim();
@@ -97,6 +98,25 @@ function salvarInventario() {
     const dados = JSON.stringify(itens);
     localStorage.setItem("terraria-lulu-inventario", dados);
 }
+
+function ordenarItens() {
+    const itens = Array.from(listaItens.children);
+
+    itens.sort(function (primeiro, segundo) {
+        const nomePrimeiro = primeiro.querySelector("span").textContent;
+        const nomeSegundo = segundo.querySelector("span").textContent;
+
+        return nomePrimeiro.localeCompare(nomeSegundo, "pt-BR");
+    });
+
+    for (const item of itens) {
+        listaItens.appendChild(item);
+    }
+
+    salvarInventario();
+}
+
+botaoOrdenar.addEventListener("click", ordenarItens);
 
 function carregarInventario() {
     const dados = localStorage.getItem("terraria-lulu-inventario");
