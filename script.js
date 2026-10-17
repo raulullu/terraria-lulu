@@ -53,7 +53,7 @@ function atualizarTotal() {
 
     for (const item of listaItens.children) {
         const quantidade = Number(
-            item.querySelector(".quantidade-exibida").textContent
+            item.querySelector(".quantidade-exibida").value
         );
 
         totalUnidades = totalUnidades + quantidade;
@@ -81,7 +81,7 @@ function salvarInventario() {
     for (const item of listaItens.children) {
         const nome = item.querySelector("span").textContent;
         const quantidade = Number(
-            item.querySelector(".quantidade-exibida").textContent
+            item.querySelector(".quantidade-exibida").value
         );
 
         const itemSalvo = {
@@ -127,9 +127,32 @@ function criarItem(item) {
     const textoItem = document.createElement("span");
     textoItem.textContent = item.nome;
 
-    const textoQuantidade = document.createElement("span");
+    const textoQuantidade = document.createElement("input");
+    textoQuantidade.type = "number";
+    textoQuantidade.min = "1";
+    textoQuantidade.step = "1";
     textoQuantidade.className = "quantidade-exibida";
-    textoQuantidade.textContent = item.quantidade;
+    textoQuantidade.value = item.quantidade;
+function atualizarQuantidade() {
+    const quantidade = Number(textoQuantidade.value);
+
+    if (Number.isInteger(quantidade) === false || quantidade < 1) {
+        mensagemItem.textContent =
+            "Digite uma quantidade inteira maior que zero.";
+
+        textoQuantidade.value = item.quantidade;
+        return;
+    }
+
+    mensagemItem.textContent = "";
+
+    item.quantidade = quantidade;
+
+    atualizarTotal();
+    salvarInventario();
+}
+
+textoQuantidade.addEventListener("change", atualizarQuantidade);    
 
     const botaoRemover = document.createElement("button");
     botaoRemover.type = "button";

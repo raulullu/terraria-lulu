@@ -90,3 +90,9 @@ h1 {
     color: #8be070;
     border-radius: 6px;
 }
+#lista-itens .quantidade-exibida {
+    width: 65px;
+    min-width: 0;
+    border: 1px solid #6d8976;
+    font-size: 16px;
+}
