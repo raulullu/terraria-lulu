@@ -10,6 +10,7 @@ const mensagemBusca = document.getElementById("mensagem-busca");
 const botaoOrdenar = document.getElementById("ordenar-itens");
 const campoOrdem = document.getElementById("ordem-itens");
 const botaoExportar = document.getElementById("exportar-itens");
+const campoImportar = document.getElementById("importar-itens");
 
 function adicionarItem() {
     const nome = campoNome.value.trim();
@@ -99,6 +100,72 @@ function obterItens() {
 
     return itens;
 }
+
+async function lerInventario() {
+    const arquivo = campoImportar.files[0];
+
+    if (arquivo === undefined) {
+        return;
+    }
+
+    try {
+        const texto = await arquivo.text();
+        const itens = JSON.parse(texto);
+
+        if (Array.isArray(itens) === false) {
+            throw new Error("O arquivo precisa conter uma lista de itens.");
+        }
+
+        for (const item of itens) {
+            if (item === null || typeof item !== "object") {
+                throw new Error("Existe um item inválido no arquivo.");
+            }
+
+            if (typeof item.nome !== "string" || item.nome.trim() === "") {
+                throw new Error("Existe um item sem nome válido.");
+            }
+
+            if (
+                Number.isInteger(item.quantidade) === false ||
+                item.quantidade < 1
+            ) {
+                throw new Error("Existe uma quantidade inválida.");
+            }
+        }
+
+        const confirmou = window.confirm(
+    "Este arquivo tem " + itens.length +
+    " registros e substituirá todo o inventário atual. Deseja continuar?"
+);
+
+if (confirmou === false) {
+    mensagemItem.textContent = "Importação cancelada.";
+    return;
+}
+
+listaItens.textContent = "";
+
+for (const item of itens) {
+    criarItem({
+        nome: item.nome.trim(),
+        quantidade: item.quantidade
+    });
+}
+
+salvarInventario();
+atualizarTotal();
+filtrarItens();
+
+mensagemItem.textContent = "Inventário importado com sucesso!";
+    } catch (erro) {
+        mensagemItem.textContent =
+            "Não foi possível importar: " + erro.message;
+    } finally {
+        campoImportar.value = "";
+    }
+}
+
+campoImportar.addEventListener("change", lerInventario);
 
 function exportarInventario() {
     const itens = obterItens();
