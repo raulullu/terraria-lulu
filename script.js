@@ -22,6 +22,12 @@ function mostrarErro(texto) {
     mensagemItem.textContent = texto;
 }
 
+function avisarQuantidade(nome, quantidade) {
+    mostrarSucesso(
+        "Quantidade de " + nome + " atualizada para " + quantidade + "."
+    );
+}
+
 function adicionarItem() {
     const nome = campoNome.value.trim();
     const quantidade = Number(campoQuantidade.value);
@@ -301,7 +307,7 @@ function atualizarQuantidade() {
 
     atualizarTotal();
     salvarInventario();
-    mostrarSucesso("Quantidade atualizada: " + quantidade);
+    avisarQuantidade(item.nome, quantidade);
 }
 
 textoQuantidade.addEventListener("change", atualizarQuantidade);    
