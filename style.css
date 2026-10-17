@@ -170,4 +170,6 @@ select:focus-visible {
         display: block;
         width: 100%;
     }
+}#lista-itens li {
+    flex-wrap: wrap;
 }

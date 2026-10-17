@@ -316,7 +316,41 @@ botaoRemover.setAttribute(
     novoItem.appendChild(textoItem);
     novoItem.appendChild(textoQuantidade);
     novoItem.appendChild(botaoRemover);
+    
+    const botaoRenomear = document.createElement("button");
+botaoRenomear.type = "button";
+botaoRenomear.textContent = "Renomear";
+botaoRenomear.setAttribute("aria-label", "Renomear " + item.nome);
 
+function renomearItem() {
+    const resposta = window.prompt("Novo nome do item:", item.nome);
+
+    if (resposta === null) {
+        return;
+    }
+
+    const novoNome = resposta.trim();
+
+    if (novoNome === "") {
+        mensagemItem.textContent = "Digite um nome válido para o item.";
+        return;
+    }
+
+    item.nome = novoNome;
+    textoItem.textContent = novoNome;
+
+    textoQuantidade.setAttribute("aria-label", "Quantidade de " + novoNome);
+    botaoRemover.setAttribute("aria-label", "Remover " + novoNome);
+    botaoRenomear.setAttribute("aria-label", "Renomear " + novoNome);
+
+    mensagemItem.textContent = "";
+
+    salvarInventario();
+    filtrarItens();
+    }
+
+    botaoRenomear.addEventListener("click", renomearItem);
+    novoItem.insertBefore(botaoRenomear, botaoRemover);
     listaItens.appendChild(novoItem);
 }
 
