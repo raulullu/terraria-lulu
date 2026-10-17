@@ -24,7 +24,7 @@ function mostrarErro(texto) {
 
 function avisarQuantidade(nome, quantidade) {
     mostrarSucesso(
-        "Quantidade de " + nome + " atualizada para " + quantidade + "."
+        `Quantidade de ${nome} atualizada para ${quantidade}.`
     );
 }
 
@@ -396,7 +396,7 @@ function criarItem(item) {
 
         salvarInventario();
         filtrarItens();
-        mostrarSucesso("Item renomeado: " + novoNome);
+        mostrarSucesso(`Item renomeado: ${novoNome}`);
     }
 
     botaoRenomear.addEventListener("click", renomearItem);
