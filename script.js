@@ -12,8 +12,13 @@ const campoOrdem = document.getElementById("ordem-itens");
 const botaoExportar = document.getElementById("exportar-itens");
 const campoImportar = document.getElementById("importar-itens");
 
+function mostrarSucesso(texto) {
+    mensagemItem.classList.add("sucesso");
+    mensagemItem.textContent = texto;
+}
+
 function adicionarItem() {
-    mensagemItem.classList.remove("sucesso");
+    mostrarSucesso("Item adicionado: " + nome);
     const nome = campoNome.value.trim();
     const quantidade = Number(campoQuantidade.value);
 
@@ -46,7 +51,7 @@ function adicionarItem() {
     campoQuantidade.value = "1";
     campoNome.focus();
     mensagemItem.classList.add("sucesso");
-    mensagemItem.textContent = "Item adicionado: " + nome;
+    
 }
 
 function verificarTecla(evento) {
@@ -159,9 +164,9 @@ for (const item of itens) {
 salvarInventario();
 atualizarTotal();
 filtrarItens();
-mensagemItem.classList.add("sucesso");
-mensagemItem.textContent =
-    "Inventário importado com sucesso! Registros: " + itens.length;
+mostrarSucesso(
+    "Inventário importado com sucesso! Registros: " + itens.length
+);
     } catch (erro) {
         mensagemItem.textContent =
             "Não foi possível importar: " + erro.message;
@@ -254,6 +259,14 @@ function carregarInventario() {
     }
 }
 
+function carregarOrdem() {
+    const ordemSalva = localStorage.getItem("terraria-lulu-ordem");
+
+    if (ordemSalva === "az" || ordemSalva === "za") {
+        campoOrdem.value = ordemSalva;
+    }
+}
+
 function criarItem(item) {
     const novoItem = document.createElement("li");
 
@@ -270,14 +283,6 @@ function criarItem(item) {
     "Quantidade de " + item.nome
 );
     textoQuantidade.value = item.quantidade;
-
-function carregarOrdem() {
-    const ordemSalva = localStorage.getItem("terraria-lulu-ordem");
-
-    if (ordemSalva === "az" || ordemSalva === "za") {
-        campoOrdem.value = ordemSalva;
-    }
-}
 
 function atualizarQuantidade() {
     mensagemItem.classList.remove("sucesso");
