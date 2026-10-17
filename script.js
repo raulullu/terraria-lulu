@@ -202,7 +202,13 @@ function exportarInventario() {
     const link = document.createElement("a");
 
     link.href = endereco;
-    link.download = "terraria-lulu-inventario.json";
+    const agora = new Date();
+
+const ano = agora.getFullYear();
+const mes = String(agora.getMonth() + 1).padStart(2, "0");
+const dia = String(agora.getDate()).padStart(2, "0");
+
+link.download = `terraria-lulu-inventario-${ano}-${mes}-${dia}.json`;
 
     document.body.appendChild(link);
     link.click();
