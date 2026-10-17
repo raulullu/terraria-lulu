@@ -5,6 +5,7 @@ const totalItens = document.getElementById("total-itens");
 const mensagemItem = document.getElementById("mensagem-item");
 const campoBusca = document.getElementById("buscar-item");
 const campoQuantidade = document.getElementById("quantidade-item");
+const botaoRemoverUltimo = document.getElementById("remover-ultimo");
 
 function adicionarItem() {
     const nome = campoNome.value.trim();
@@ -17,7 +18,8 @@ function adicionarItem() {
     }
 
     if (Number.isInteger(quantidade) === false || quantidade < 1) {
-        mensagemItem.textContent = "Digite uma quantidade inteira ou maior que zero.";
+        mensagemItem.textContent =
+            "Digite uma quantidade inteira maior que zero.";
         campoQuantidade.focus();
         return;
     }
@@ -25,9 +27,9 @@ function adicionarItem() {
     mensagemItem.textContent = "";
 
     const item = {
-    nome: nome,
-    quantidade: quantidade
-};
+        nome: nome,
+        quantidade: quantidade
+    };
 
     criarItem(item);
     filtrarItens();
@@ -39,24 +41,27 @@ function adicionarItem() {
     campoNome.focus();
 }
 
-botaoAdicionar.addEventListener("click", adicionarItem);
-
 function verificarTecla(evento) {
     if (evento.key === "Enter") {
         adicionarItem();
     }
 }
 
-campoNome.addEventListener("keydown", verificarTecla);
-
 function atualizarTotal() {
-    const quantidade = listaItens.children.length;
-    totalItens.textContent = "Total de itens: " + quantidade;
+    const registros = listaItens.children.length;
+    let totalUnidades = 0;
+
+    for (const item of listaItens.children) {
+        const quantidade = Number(
+            item.querySelector(".quantidade-exibida").textContent
+        );
+
+        totalUnidades = totalUnidades + quantidade;
+    }
+
+    totalItens.textContent =
+        "Registros: " + registros + " | Unidades: " + totalUnidades;
 }
-
-atualizarTotal();
-
-const botaoRemoverUltimo = document.getElementById("remover-ultimo");
 
 function removerUltimoItem() {
     const ultimoItem = listaItens.lastElementChild;
@@ -66,12 +71,9 @@ function removerUltimoItem() {
     }
 
     ultimoItem.remove();
-
     atualizarTotal();
     salvarInventario();
 }
-
-botaoRemoverUltimo.addEventListener("click", removerUltimoItem);
 
 function salvarInventario() {
     const itens = [];
@@ -117,8 +119,6 @@ function carregarInventario() {
             criarItem(item);
         }
     }
-
-    atualizarTotal();
 }
 
 function criarItem(item) {
@@ -146,6 +146,7 @@ function criarItem(item) {
     novoItem.appendChild(textoItem);
     novoItem.appendChild(textoQuantidade);
     novoItem.appendChild(botaoRemover);
+
     listaItens.appendChild(novoItem);
 }
 
@@ -166,7 +167,11 @@ function filtrarItens() {
     }
 }
 
+botaoAdicionar.addEventListener("click", adicionarItem);
+campoNome.addEventListener("keydown", verificarTecla);
+botaoRemoverUltimo.addEventListener("click", removerUltimoItem);
 campoBusca.addEventListener("input", filtrarItens);
 
 carregarInventario();
+atualizarTotal();
 filtrarItens();
