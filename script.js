@@ -208,7 +208,12 @@ const ano = agora.getFullYear();
 const mes = String(agora.getMonth() + 1).padStart(2, "0");
 const dia = String(agora.getDate()).padStart(2, "0");
 
-link.download = `terraria-lulu-inventario-${ano}-${mes}-${dia}.json`;
+const hora = String(agora.getHours()).padStart(2, "0");
+const minuto = String(agora.getMinutes()).padStart(2, "0");
+const segundo = String(agora.getSeconds()).padStart(2, "0");
+
+link.download =
+    `terraria-lulu-inventario-${ano}-${mes}-${dia}_${hora}-${minuto}-${segundo}.json`;
 
     document.body.appendChild(link);
     link.click();
