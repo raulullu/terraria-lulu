@@ -21,6 +21,7 @@ Projeto de estudo com HTML, CSS e JavaScript.
 - Identificar campos e botões para leitores de tela.
 - Destacar o foco ao navegar pelo teclado.
 - Renomear itens cadastrados, mantendo suas quantidades.
+- Retornar o foco ao campo de nome após remover um item.
 
 ## Como executar
 
