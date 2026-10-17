@@ -152,38 +152,38 @@ async function lerInventario() {
             }
 
             if (quantidadeValida(item.quantidade) === false) {
-            throw new Error("Existe uma quantidade inválida.");
-}
+                throw new Error("Existe uma quantidade inválida.");
+            }
         }
 
         const confirmou = window.confirm(
-    "Este arquivo tem " + itens.length +
-    " registros e substituirá todo o inventário atual. Deseja continuar?"
-);
+            "Este arquivo tem " + itens.length +
+            " registros e substituirá todo o inventário atual. Deseja continuar?"
+        );
 
-if (confirmou === false) {
-    mensagemItem.textContent = "Importação cancelada.";
-    return;
-}
+        if (confirmou === false) {
+            mensagemItem.textContent = "Importação cancelada.";
+            return;
+        }
 
-listaItens.textContent = "";
+        listaItens.textContent = "";
 
-for (const item of itens) {
-    criarItem({
-        nome: item.nome.trim(),
-        quantidade: item.quantidade
-    });
-}
+        for (const item of itens) {
+            criarItem({
+                nome: item.nome.trim(),
+                quantidade: item.quantidade
+            });
+        }
 
-salvarInventario();
-atualizarTotal();
-filtrarItens();
-mostrarSucesso(
-    "Inventário importado com sucesso! Registros: " + itens.length
-);
+        salvarInventario();
+        atualizarTotal();
+        filtrarItens();
+        mostrarSucesso(
+            "Inventário importado com sucesso! Registros: " + itens.length
+        );
     } catch (erro) {
-    mostrarErro("Não foi possível importar: " + erro.message);
-} finally {
+        mostrarErro("Não foi possível importar: " + erro.message);
+    } finally {
         campoImportar.value = "";
     }
 }
@@ -227,18 +227,22 @@ function ordenarItens() {
     const ordem = campoOrdem.value;
 
     itens.sort(function (primeiro, segundo) {
-        
-    if (ordem === "quantidade") {
-    const quantidadePrimeiro = Number(
-        primeiro.querySelector(".quantidade-exibida").value
-    );
 
-    const quantidadeSegundo = Number(
-        segundo.querySelector(".quantidade-exibida").value
-    );
+        if (ordem === "quantidade" || ordem === "menor-quantidade") {
+            const quantidadePrimeiro = Number(
+                primeiro.querySelector(".quantidade-exibida").value
+            );
 
-    return quantidadeSegundo - quantidadePrimeiro;
-}
+            const quantidadeSegundo = Number(
+                segundo.querySelector(".quantidade-exibida").value
+            );
+
+            if (ordem === "menor-quantidade") {
+                return quantidadePrimeiro - quantidadeSegundo;
+            }
+
+            return quantidadeSegundo - quantidadePrimeiro;
+        }
         const nomePrimeiro = primeiro.querySelector("span").textContent;
         const nomeSegundo = segundo.querySelector("span").textContent;
 
@@ -288,10 +292,11 @@ function carregarOrdem() {
     const ordemSalva = localStorage.getItem("terraria-lulu-ordem");
 
     if (
-    ordemSalva === "az" ||
-    ordemSalva === "za" ||
-    ordemSalva === "quantidade"
-) {
+        ordemSalva === "az" ||
+        ordemSalva === "za" ||
+        ordemSalva === "quantidade" ||
+        ordemSalva === "menor-quantidade"
+    ) {
         campoOrdem.value = ordemSalva;
     }
 }
@@ -308,90 +313,90 @@ function criarItem(item) {
     textoQuantidade.step = "1";
     textoQuantidade.className = "quantidade-exibida";
     textoQuantidade.setAttribute(
-    "aria-label",
-    "Quantidade de " + item.nome
-);
+        "aria-label",
+        "Quantidade de " + item.nome
+    );
     textoQuantidade.value = item.quantidade;
 
-function atualizarQuantidade() {
-    mensagemItem.classList.remove("sucesso");
-    const quantidade = Number(textoQuantidade.value);
+    function atualizarQuantidade() {
+        mensagemItem.classList.remove("sucesso");
+        const quantidade = Number(textoQuantidade.value);
 
-    if (quantidadeValida(quantidade) === false) {
-        mostrarErro("Digite uma quantidade inteira maior que zero.");
+        if (quantidadeValida(quantidade) === false) {
+            mostrarErro("Digite uma quantidade inteira maior que zero.");
 
-        textoQuantidade.value = item.quantidade;
-        return;
+            textoQuantidade.value = item.quantidade;
+            return;
+        }
+
+        mensagemItem.textContent = "";
+
+        item.quantidade = quantidade;
+
+        atualizarTotal();
+        salvarInventario();
+        avisarQuantidade(item.nome, quantidade);
     }
 
-    mensagemItem.textContent = "";
-
-    item.quantidade = quantidade;
-
-    atualizarTotal();
-    salvarInventario();
-    avisarQuantidade(item.nome, quantidade);
-}
-
-textoQuantidade.addEventListener("change", atualizarQuantidade);    
+    textoQuantidade.addEventListener("change", atualizarQuantidade);
 
     const botaoRemover = document.createElement("button");
-botaoRemover.type = "button";
-botaoRemover.textContent = "Remover";
+    botaoRemover.type = "button";
+    botaoRemover.textContent = "Remover";
 
-botaoRemover.setAttribute(
-    "aria-label",
-    "Remover " + item.nome
-);
+    botaoRemover.setAttribute(
+        "aria-label",
+        "Remover " + item.nome
+    );
 
     function removerEsteItem() {
-    novoItem.remove();
-    atualizarTotal();
-    salvarInventario();
-    filtrarItens();
-    campoNome.focus();
+        novoItem.remove();
+        atualizarTotal();
+        salvarInventario();
+        filtrarItens();
+        campoNome.focus();
 
-    mostrarSucesso("Item removido: " + item.nome);
-}
+        mostrarSucesso("Item removido: " + item.nome);
+    }
 
     botaoRemover.addEventListener("click", removerEsteItem);
 
     novoItem.appendChild(textoItem);
     novoItem.appendChild(textoQuantidade);
     novoItem.appendChild(botaoRemover);
-    
+
     const botaoRenomear = document.createElement("button");
-botaoRenomear.type = "button";
-botaoRenomear.textContent = "Renomear";
-botaoRenomear.setAttribute("aria-label", "Renomear " + item.nome);
+    botaoRenomear.type = "button";
+    botaoRenomear.textContent = "Renomear";
+    botaoRenomear.setAttribute("aria-label", "Renomear " + item.nome);
 
-function renomearItem() {
-    mensagemItem.classList.remove("sucesso");
-    const resposta = window.prompt("Novo nome do item:", item.nome);
+    function renomearItem() {
+        mensagemItem.classList.remove("sucesso");
+        const resposta = window.prompt("Novo nome do item:", item.nome);
 
-    if (resposta === null) {
-        return;
-    }
+        if (resposta === null) {
+            return;
+        }
 
-    const novoNome = resposta.trim();
+        const novoNome = resposta.trim();
 
-    if (novoNome === "") {
-        mostrarErro("Digite um nome válido para o item.");
-        return;
-    }
+        if (novoNome === "") {
+            mostrarErro("Digite um nome válido para o item.");
+            return;
+        }
 
-    item.nome = novoNome;
-    textoItem.textContent = novoNome;
+        item.nome = novoNome;
+        textoItem.textContent = novoNome;
 
-    textoQuantidade.setAttribute("aria-label", "Quantidade de " + novoNome);
-    botaoRemover.setAttribute("aria-label", "Remover " + novoNome);
-    botaoRenomear.setAttribute("aria-label", "Renomear " + novoNome);
+        textoQuantidade.setAttribute("aria-label", "Quantidade de " + novoNome);
+        botaoRemover.setAttribute("aria-label", "Remover " + novoNome);
+        botaoRenomear.setAttribute("aria-label", "Renomear " + novoNome);
 
-    mensagemItem.textContent = "";
+        mensagemItem.textContent = "";
 
-    salvarInventario();
-    filtrarItens();
-    mostrarSucesso("Item renomeado: " + novoNome);
+        salvarInventario();
+        filtrarItens();
+        mostrarSucesso("Item renomeado: " + novoNome);
     }
 
     botaoRenomear.addEventListener("click", renomearItem);
@@ -426,14 +431,14 @@ function filtrarItens() {
     }
 
     if (listaItens.children.length === 0) {
-    mensagemBusca.textContent = "Seu inventário está vazio.";
+        mensagemBusca.textContent = "Seu inventário está vazio.";
     } else if (encontrados === 0) {
-    mensagemBusca.textContent = "Nenhum item encontrado.";
+        mensagemBusca.textContent = "Nenhum item encontrado.";
     } else if (busca !== "") {
-    mensagemBusca.textContent = "Registros encontrados: " + encontrados;
+        mensagemBusca.textContent = "Registros encontrados: " + encontrados;
     } else {
-    mensagemBusca.textContent = "";
-}
+        mensagemBusca.textContent = "";
+    }
 }
 
 botaoAdicionar.addEventListener("click", adicionarItem);

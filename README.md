@@ -22,6 +22,7 @@ Projeto de estudo com HTML, CSS e JavaScript.
 - Destacar o foco ao navegar pelo teclado.
 - Renomear itens cadastrados, mantendo suas quantidades.
 - Retornar o foco ao campo de nome após remover um item.
+- Ordenar por nome de A a Z, de Z a A ou pela maior quantidade.
 
 ## Como executar
 
