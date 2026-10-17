@@ -13,6 +13,7 @@ const botaoExportar = document.getElementById("exportar-itens");
 const campoImportar = document.getElementById("importar-itens");
 
 function adicionarItem() {
+    mensagemItem.classList.remove("sucesso");
     const nome = campoNome.value.trim();
     const quantidade = Number(campoQuantidade.value);
 
@@ -44,6 +45,8 @@ function adicionarItem() {
     campoNome.value = "";
     campoQuantidade.value = "1";
     campoNome.focus();
+    mensagemItem.classList.add("sucesso");
+    mensagemItem.textContent = "Item adicionado: " + nome;
 }
 
 function verificarTecla(evento) {
@@ -102,6 +105,7 @@ function obterItens() {
 }
 
 async function lerInventario() {
+    mensagemItem.classList.remove("sucesso");
     const arquivo = campoImportar.files[0];
 
     if (arquivo === undefined) {
@@ -155,8 +159,9 @@ for (const item of itens) {
 salvarInventario();
 atualizarTotal();
 filtrarItens();
-
-mensagemItem.textContent = "Inventário importado com sucesso!";
+mensagemItem.classList.add("sucesso");
+mensagemItem.textContent =
+    "Inventário importado com sucesso! Registros: " + itens.length;
     } catch (erro) {
         mensagemItem.textContent =
             "Não foi possível importar: " + erro.message;
@@ -275,6 +280,7 @@ function carregarOrdem() {
 }
 
 function atualizarQuantidade() {
+    mensagemItem.classList.remove("sucesso");
     const quantidade = Number(textoQuantidade.value);
 
     if (Number.isInteger(quantidade) === false || quantidade < 1) {
@@ -324,6 +330,7 @@ botaoRenomear.textContent = "Renomear";
 botaoRenomear.setAttribute("aria-label", "Renomear " + item.nome);
 
 function renomearItem() {
+    mensagemItem.classList.remove("sucesso");
     const resposta = window.prompt("Novo nome do item:", item.nome);
 
     if (resposta === null) {

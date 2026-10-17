@@ -173,3 +173,6 @@ select:focus-visible {
 }#lista-itens li {
     flex-wrap: wrap;
 }
+#mensagem-item.sucesso {
+    color: #8be070;
+}
