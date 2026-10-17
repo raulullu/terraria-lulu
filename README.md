@@ -23,6 +23,7 @@ Projeto de estudo com HTML, CSS e JavaScript.
 - Renomear itens cadastrados, mantendo suas quantidades.
 - Retornar o foco ao campo de nome após remover um item.
 - Ordenar por nome de A a Z, de Z a A ou pela maior quantidade.
+- Ordenar por nome de A a Z ou de Z a A, e por quantidade crescente ou decrescente.
 
 ## Como executar
 

@@ -84,7 +84,7 @@ function atualizarTotal() {
     }
 
     totalItens.textContent =
-        "Registros: " + registros + " | Unidades: " + totalUnidades;
+    `Registros: ${registros} | Unidades: ${totalUnidades}`;
 }
 
 function removerUltimoItem() {
