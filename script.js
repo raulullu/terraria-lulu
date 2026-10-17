@@ -169,8 +169,16 @@ function filtrarItens() {
 
 botaoAdicionar.addEventListener("click", adicionarItem);
 campoNome.addEventListener("keydown", verificarTecla);
+campoQuantidade.addEventListener("keydown", verificarTecla);
 botaoRemoverUltimo.addEventListener("click", removerUltimoItem);
+function limparBusca(evento) {
+    if (evento.key === "Escape") {
+        campoBusca.value = "";
+        filtrarItens();
+    }
+}
 campoBusca.addEventListener("input", filtrarItens);
+campoBusca.addEventListener("keydown", limparBusca);
 
 carregarInventario();
 atualizarTotal();
