@@ -203,12 +203,14 @@ function filtrarItens() {
     }
 
     if (listaItens.children.length === 0) {
-        mensagemBusca.textContent = "Seu inventário está vazio.";
+    mensagemBusca.textContent = "Seu inventário está vazio.";
     } else if (encontrados === 0) {
-        mensagemBusca.textContent = "Nenhum item encontrado.";
+    mensagemBusca.textContent = "Nenhum item encontrado.";
+    } else if (busca !== "") {
+    mensagemBusca.textContent = "Registros encontrados: " + encontrados;
     } else {
-        mensagemBusca.textContent = "";
-    }
+    mensagemBusca.textContent = "";
+}
 }
 
 botaoAdicionar.addEventListener("click", adicionarItem);

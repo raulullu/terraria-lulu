@@ -96,3 +96,28 @@ h1 {
     border: 1px solid #6d8976;
     font-size: 16px;
 }
+@media (max-width: 600px) {
+    body {
+        padding: 20px;
+    }
+
+    #nome-item,
+    #buscar-item {
+        display: block;
+        box-sizing: border-box;
+        width: 100%;
+        margin-top: 6px;
+        margin-bottom: 12px;
+    }
+
+    #adicionar-item,
+    #remover-ultimo {
+        display: block;
+        width: 100%;
+        margin-top: 12px;
+    }
+
+    #lista-itens {
+        max-width: 100%;
+    }
+}
