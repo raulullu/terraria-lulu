@@ -20,6 +20,7 @@ Projeto de estudo com HTML, CSS e JavaScript.
 - Adaptar o layout para telas menores.
 - Identificar campos e botões para leitores de tela.
 - Destacar o foco ao navegar pelo teclado.
+- Renomear itens cadastrados, mantendo suas quantidades.
 
 ## Como executar
 

@@ -305,11 +305,12 @@ botaoRemover.setAttribute(
 );
 
     function removerEsteItem() {
-        novoItem.remove();
-        atualizarTotal();
-        salvarInventario();
-        filtrarItens();
-    }
+    novoItem.remove();
+    atualizarTotal();
+    salvarInventario();
+    filtrarItens();
+    campoNome.focus();
+}
 
     botaoRemover.addEventListener("click", removerEsteItem);
 
