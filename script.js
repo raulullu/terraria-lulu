@@ -227,6 +227,18 @@ function ordenarItens() {
     const ordem = campoOrdem.value;
 
     itens.sort(function (primeiro, segundo) {
+        
+    if (ordem === "quantidade") {
+    const quantidadePrimeiro = Number(
+        primeiro.querySelector(".quantidade-exibida").value
+    );
+
+    const quantidadeSegundo = Number(
+        segundo.querySelector(".quantidade-exibida").value
+    );
+
+    return quantidadeSegundo - quantidadePrimeiro;
+}
         const nomePrimeiro = primeiro.querySelector("span").textContent;
         const nomeSegundo = segundo.querySelector("span").textContent;
 
@@ -275,7 +287,11 @@ function carregarInventario() {
 function carregarOrdem() {
     const ordemSalva = localStorage.getItem("terraria-lulu-ordem");
 
-    if (ordemSalva === "az" || ordemSalva === "za") {
+    if (
+    ordemSalva === "az" ||
+    ordemSalva === "za" ||
+    ordemSalva === "quantidade"
+) {
         campoOrdem.value = ordemSalva;
     }
 }
