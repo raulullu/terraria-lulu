@@ -6,6 +6,7 @@ const mensagemItem = document.getElementById("mensagem-item");
 const campoBusca = document.getElementById("buscar-item");
 const campoQuantidade = document.getElementById("quantidade-item");
 const botaoRemoverUltimo = document.getElementById("remover-ultimo");
+const mensagemBusca = document.getElementById("mensagem-busca");
 
 function adicionarItem() {
     const nome = campoNome.value.trim();
@@ -73,6 +74,7 @@ function removerUltimoItem() {
     ultimoItem.remove();
     atualizarTotal();
     salvarInventario();
+    filtrarItens();
 }
 
 function salvarInventario() {
@@ -162,6 +164,7 @@ textoQuantidade.addEventListener("change", atualizarQuantidade);
         novoItem.remove();
         atualizarTotal();
         salvarInventario();
+        filtrarItens();
     }
 
     botaoRemover.addEventListener("click", removerEsteItem);
@@ -173,20 +176,38 @@ textoQuantidade.addEventListener("change", atualizarQuantidade);
     listaItens.appendChild(novoItem);
 }
 
+function normalizarTexto(texto) {
+    return texto
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+}
+
 function filtrarItens() {
-    const busca = campoBusca.value.trim().toLowerCase();
+    const busca = normalizarTexto(campoBusca.value);
+    let encontrados = 0;
 
     botaoRemoverUltimo.disabled = busca !== "";
 
     for (const item of listaItens.children) {
         const textoItem = item.querySelector("span");
-        const nome = textoItem.textContent.toLowerCase();
+        const nome = normalizarTexto(textoItem.textContent);
 
         if (nome.includes(busca)) {
             item.style.display = "";
+            encontrados = encontrados + 1;
         } else {
             item.style.display = "none";
         }
+    }
+
+    if (listaItens.children.length === 0) {
+        mensagemBusca.textContent = "Seu inventário está vazio.";
+    } else if (encontrados === 0) {
+        mensagemBusca.textContent = "Nenhum item encontrado.";
+    } else {
+        mensagemBusca.textContent = "";
     }
 }
 
