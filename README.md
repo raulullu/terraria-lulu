@@ -12,6 +12,8 @@ Projeto de estudo com HTML, CSS e JavaScript.
 - Mostrar o total de registros no inventário.
 - Salvar nomes e quantidades no navegador.
 - Validar o nome e a quantidade antes de adicionar.
+- Exportar o inventário para um arquivo JSON.
+- Importar um inventário com validação dos dados e confirmação.
 
 ## Como executar
 
