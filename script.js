@@ -87,13 +87,19 @@ function removerUltimoItem() {
     const ultimoItem = listaItens.lastElementChild;
 
     if (ultimoItem === null) {
+        mostrarErro("Não há itens para remover.");
         return;
     }
+
+    const nome = ultimoItem.querySelector("span").textContent;
 
     ultimoItem.remove();
     atualizarTotal();
     salvarInventario();
     filtrarItens();
+    campoNome.focus();
+
+    mostrarSucesso("Item removido: " + nome);
 }
 
 function obterItens() {
@@ -327,6 +333,8 @@ botaoRemover.setAttribute(
     salvarInventario();
     filtrarItens();
     campoNome.focus();
+
+    mostrarSucesso("Item removido: " + item.nome);
 }
 
     botaoRemover.addEventListener("click", removerEsteItem);
