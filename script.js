@@ -17,25 +17,26 @@ function mostrarSucesso(texto) {
     mensagemItem.textContent = texto;
 }
 
+function mostrarErro(texto) {
+    mensagemItem.classList.remove("sucesso");
+    mensagemItem.textContent = texto;
+}
+
 function adicionarItem() {
-    mostrarSucesso("Item adicionado: " + nome);
     const nome = campoNome.value.trim();
     const quantidade = Number(campoQuantidade.value);
 
     if (nome === "") {
-        mensagemItem.textContent = "Digite o nome de um item.";
+        mostrarErro("Digite o nome de um item.");
         campoNome.focus();
         return;
     }
 
     if (Number.isInteger(quantidade) === false || quantidade < 1) {
-        mensagemItem.textContent =
-            "Digite uma quantidade inteira maior que zero.";
+        mostrarErro("Digite uma quantidade inteira maior que zero.");
         campoQuantidade.focus();
         return;
     }
-
-    mensagemItem.textContent = "";
 
     const item = {
         nome: nome,
@@ -50,8 +51,8 @@ function adicionarItem() {
     campoNome.value = "";
     campoQuantidade.value = "1";
     campoNome.focus();
-    mensagemItem.classList.add("sucesso");
-    
+
+    mostrarSucesso("Item adicionado: " + nome);
 }
 
 function verificarTecla(evento) {
@@ -168,9 +169,8 @@ mostrarSucesso(
     "Inventário importado com sucesso! Registros: " + itens.length
 );
     } catch (erro) {
-        mensagemItem.textContent =
-            "Não foi possível importar: " + erro.message;
-    } finally {
+    mostrarErro("Não foi possível importar: " + erro.message);
+} finally {
         campoImportar.value = "";
     }
 }
