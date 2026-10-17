@@ -154,3 +154,20 @@ select:focus-visible {
     outline: 3px solid #8be070;
     outline-offset: 3px;
 }
+#exportar-itens {
+    padding: 10px 16px;
+    margin-top: 12px;
+    background-color: #8be070;
+    color: #17251f;
+    border: none;
+    border-radius: 16px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    #exportar-itens {
+        display: block;
+        width: 100%;
+    }
+}

@@ -9,6 +9,7 @@ const botaoRemoverUltimo = document.getElementById("remover-ultimo");
 const mensagemBusca = document.getElementById("mensagem-busca");
 const botaoOrdenar = document.getElementById("ordenar-itens");
 const campoOrdem = document.getElementById("ordem-itens");
+const botaoExportar = document.getElementById("exportar-itens");
 
 function adicionarItem() {
     const nome = campoNome.value.trim();
@@ -79,7 +80,7 @@ function removerUltimoItem() {
     filtrarItens();
 }
 
-function salvarInventario() {
+function obterItens() {
     const itens = [];
 
     for (const item of listaItens.children) {
@@ -96,7 +97,38 @@ function salvarInventario() {
         itens.push(itemSalvo);
     }
 
+    return itens;
+}
+
+function exportarInventario() {
+    const itens = obterItens();
+    const dados = JSON.stringify(itens, null, 2);
+
+    const arquivo = new Blob([dados], {
+        type: "application/json"
+    });
+
+    const endereco = URL.createObjectURL(arquivo);
+    const link = document.createElement("a");
+
+    link.href = endereco;
+    link.download = "terraria-lulu-inventario.json";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(function () {
+        URL.revokeObjectURL(endereco);
+    }, 1000);
+}
+
+botaoExportar.addEventListener("click", exportarInventario);
+
+function salvarInventario() {
+    const itens = obterItens();
     const dados = JSON.stringify(itens);
+
     localStorage.setItem("terraria-lulu-inventario", dados);
 }
 
