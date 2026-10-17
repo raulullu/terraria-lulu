@@ -19,7 +19,13 @@
 <input id="quantidade-item" type="number" min="1" step="1" value="1">
 <button id="adicionar-item" type="button">Adicionar item</button>
 <button id="remover-ultimo" type="button">Remover último item</button>
-<button id="ordenar-itens" type="button">Ordenar de A a Z</button>
+<label for="ordem-itens">Ordem:</label>
+<select id="ordem-itens">
+    <option value="az">A a Z</option>
+    <option value="za">Z a A</option>
+</select>
+
+<button id="ordenar-itens" type="button">Ordenar itens</button>
     <p id="mensagem-item" role="status"></p>
     <p>
     <label for="buscar-item">Buscar no inventário:</label>

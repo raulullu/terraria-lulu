@@ -143,3 +143,14 @@ button:focus-visible {
         width: 100%;
     }
 }
+#ordem-itens {
+    padding: 10px;
+    border: 1px solid #6d8976;
+    border-radius: 16px;
+    font-size: 16px;
+}
+
+select:focus-visible {
+    outline: 3px solid #8be070;
+    outline-offset: 3px;
+}

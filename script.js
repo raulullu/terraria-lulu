@@ -8,6 +8,7 @@ const campoQuantidade = document.getElementById("quantidade-item");
 const botaoRemoverUltimo = document.getElementById("remover-ultimo");
 const mensagemBusca = document.getElementById("mensagem-busca");
 const botaoOrdenar = document.getElementById("ordenar-itens");
+const campoOrdem = document.getElementById("ordem-itens");
 
 function adicionarItem() {
     const nome = campoNome.value.trim();
@@ -101,10 +102,15 @@ function salvarInventario() {
 
 function ordenarItens() {
     const itens = Array.from(listaItens.children);
+    const ordem = campoOrdem.value;
 
     itens.sort(function (primeiro, segundo) {
         const nomePrimeiro = primeiro.querySelector("span").textContent;
         const nomeSegundo = segundo.querySelector("span").textContent;
+
+        if (ordem === "za") {
+            return nomeSegundo.localeCompare(nomePrimeiro, "pt-BR");
+        }
 
         return nomePrimeiro.localeCompare(nomeSegundo, "pt-BR");
     });
@@ -114,6 +120,7 @@ function ordenarItens() {
     }
 
     salvarInventario();
+    localStorage.setItem("terraria-lulu-ordem", ordem);
 }
 
 botaoOrdenar.addEventListener("click", ordenarItens);
@@ -159,6 +166,15 @@ function criarItem(item) {
     "Quantidade de " + item.nome
 );
     textoQuantidade.value = item.quantidade;
+
+function carregarOrdem() {
+    const ordemSalva = localStorage.getItem("terraria-lulu-ordem");
+
+    if (ordemSalva === "az" || ordemSalva === "za") {
+        campoOrdem.value = ordemSalva;
+    }
+}
+
 function atualizarQuantidade() {
     const quantidade = Number(textoQuantidade.value);
 
@@ -256,5 +272,6 @@ campoBusca.addEventListener("input", filtrarItens);
 campoBusca.addEventListener("keydown", limparBusca);
 
 carregarInventario();
+carregarOrdem();
 atualizarTotal();
 filtrarItens();
