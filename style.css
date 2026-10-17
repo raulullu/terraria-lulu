@@ -121,3 +121,8 @@ h1 {
         max-width: 100%;
     }
 }
+input:focus-visible,
+button:focus-visible {
+    outline: 3px solid #8be070;
+    outline-offset: 3px;
+}

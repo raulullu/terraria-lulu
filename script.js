@@ -134,6 +134,10 @@ function criarItem(item) {
     textoQuantidade.min = "1";
     textoQuantidade.step = "1";
     textoQuantidade.className = "quantidade-exibida";
+    textoQuantidade.setAttribute(
+    "aria-label",
+    "Quantidade de " + item.nome
+);
     textoQuantidade.value = item.quantidade;
 function atualizarQuantidade() {
     const quantidade = Number(textoQuantidade.value);
@@ -157,8 +161,13 @@ function atualizarQuantidade() {
 textoQuantidade.addEventListener("change", atualizarQuantidade);    
 
     const botaoRemover = document.createElement("button");
-    botaoRemover.type = "button";
-    botaoRemover.textContent = "Remover";
+botaoRemover.type = "button";
+botaoRemover.textContent = "Remover";
+
+botaoRemover.setAttribute(
+    "aria-label",
+    "Remover " + item.nome
+);
 
     function removerEsteItem() {
         novoItem.remove();
