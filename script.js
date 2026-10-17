@@ -28,6 +28,10 @@ function avisarQuantidade(nome, quantidade) {
     );
 }
 
+function quantidadeValida(quantidade) {
+    return Number.isInteger(quantidade) && quantidade > 0;
+}
+
 function adicionarItem() {
     const nome = campoNome.value.trim();
     const quantidade = Number(campoQuantidade.value);
@@ -38,7 +42,7 @@ function adicionarItem() {
         return;
     }
 
-    if (Number.isInteger(quantidade) === false || quantidade < 1) {
+    if (quantidadeValida(quantidade) === false) {
         mostrarErro("Digite uma quantidade inteira maior que zero.");
         campoQuantidade.focus();
         return;
@@ -147,12 +151,9 @@ async function lerInventario() {
                 throw new Error("Existe um item sem nome válido.");
             }
 
-            if (
-                Number.isInteger(item.quantidade) === false ||
-                item.quantidade < 1
-            ) {
-                throw new Error("Existe uma quantidade inválida.");
-            }
+            if (quantidadeValida(item.quantidade) === false) {
+            throw new Error("Existe uma quantidade inválida.");
+}
         }
 
         const confirmou = window.confirm(
@@ -300,7 +301,7 @@ function atualizarQuantidade() {
     mensagemItem.classList.remove("sucesso");
     const quantidade = Number(textoQuantidade.value);
 
-    if (Number.isInteger(quantidade) === false || quantidade < 1) {
+    if (quantidadeValida(quantidade) === false) {
         mostrarErro("Digite uma quantidade inteira maior que zero.");
 
         textoQuantidade.value = item.quantidade;
