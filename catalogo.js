@@ -8,5 +8,10 @@ const catalogoItens = [
         id: "pedra",
         nome: "Pedra",
         categoria: "materiais"
+    },
+    {
+        id: "item-teste",
+        nome: "Item de Teste",
+        categoria: "outros"
     }
 ];

@@ -31,6 +31,10 @@ Projeto de estudo com HTML, CSS e JavaScript.
 - Limpar a busca e o filtro de categoria com um botão.
 - Sugerir nomes a partir de um catálogo de itens.
 - Preencher e bloquear a categoria de itens reconhecidos no catálogo.
+- Consultar o catálogo pelo identificador para definir nome e categoria dos itens vinculados.
+- Permitir editar apenas a quantidade dos itens vinculados ao catálogo.
+- Impedir novos cadastros duplicados de itens vinculados ao catálogo.
+- Recusar importações com identificadores de catálogo repetidos.
 
 ## Como executar
 

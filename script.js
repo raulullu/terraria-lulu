@@ -32,6 +32,16 @@ function avisarQuantidade(nome, quantidade) {
     );
 }
 
+function buscarRegistroDoCatalogo(catalogoId) {
+    for (const linha of listaItens.children) {
+        if (linha.dataset.catalogoId === catalogoId) {
+            return linha;
+        }
+    }
+
+    return null;
+}
+
 function quantidadeValida(quantidade) {
     return Number.isInteger(quantidade) && quantidade > 0;
 }
@@ -66,7 +76,18 @@ if (itemEncontrado !== null) {
     item.nome = itemEncontrado.nome;
     item.categoria = itemEncontrado.categoria;
 }
+if (item.catalogoId !== null) {
+    const registroExistente = buscarRegistroDoCatalogo(item.catalogoId);
 
+    if (registroExistente !== null) {
+        mostrarErro(
+            `${item.nome} já está no inventário. Edite a quantidade na linha existente.`
+        );
+
+        campoNome.focus();
+        return;
+    }
+}
     criarItem(item);
     filtrarItens();
     atualizarTotal();
@@ -207,7 +228,7 @@ async function lerInventario() {
         if (Array.isArray(itens) === false) {
             throw new Error("O arquivo precisa conter uma lista de itens.");
         }
-
+        const idsEncontrados = [];
         for (const item of itens) {
             if (item === null || typeof item !== "object") {
                 throw new Error("Existe um item inválido no arquivo.");
@@ -233,7 +254,13 @@ async function lerInventario() {
     ) {
         throw new Error("Existe um identificador de catálogo inválido.");
     }
+if (idsEncontrados.includes(item.catalogoId)) {
+    throw new Error(
+        `Identificador repetido no arquivo: ${item.catalogoId}.`
+    );
+}
 
+idsEncontrados.push(item.catalogoId);
     const itemDoCatalogo = buscarNoCatalogoPorId(item.catalogoId);
 
     if (itemDoCatalogo === null) {
