@@ -14,6 +14,7 @@ const campoImportar = document.getElementById("importar-itens");
 const campoCategoria = document.getElementById("categoria-item");
 const filtroCategoria = document.getElementById("filtrar-categoria");
 const botaoLimparFiltros = document.getElementById("limpar-filtros");
+const sugestoesItens = document.getElementById("sugestoes-itens");
 
 function mostrarSucesso(texto) {
     mensagemItem.classList.add("sucesso");
@@ -51,11 +52,18 @@ function adicionarItem() {
         return;
     }
 
-    const item = {
+    const itemEncontrado = buscarNoCatalogo(nome);
+
+const item = {
     nome: nome,
     quantidade: quantidade,
     categoria: campoCategoria.value
 };
+
+if (itemEncontrado !== null) {
+    item.nome = itemEncontrado.nome;
+    item.categoria = itemEncontrado.categoria;
+}
 
     criarItem(item);
     filtrarItens();
@@ -66,7 +74,7 @@ function adicionarItem() {
     campoQuantidade.value = "1";
     campoNome.focus();
 
-    mostrarSucesso("Item adicionado: " + nome);
+    mostrarSucesso(`Item adicionado: ${item.nome}`);
 }
 
 function verificarTecla(evento) {
@@ -133,6 +141,31 @@ function obterItens() {
 
     return itens;
 }
+
+function buscarNoCatalogo(nome) {
+    const nomeBuscado = normalizarTexto(nome);
+
+    for (const item of catalogoItens) {
+        if (normalizarTexto(item.nome) === nomeBuscado) {
+            return item;
+        }
+    }
+
+    return null;
+}
+
+function preencherCategoria() {
+    const itemEncontrado = buscarNoCatalogo(campoNome.value);
+
+    if (itemEncontrado === null) {
+        campoCategoria.value = "outros";
+        return;
+    }
+
+    campoCategoria.value = itemEncontrado.categoria;
+}
+
+campoNome.addEventListener("input", preencherCategoria);
 
 function categoriaValida(categoria) {
     const categorias = [
@@ -226,6 +259,17 @@ function limparFiltros() {
 }
 
 botaoLimparFiltros.addEventListener("click", limparFiltros);
+
+function carregarSugestoes() {
+    sugestoesItens.textContent = "";
+
+    for (const item of catalogoItens) {
+        const opcao = document.createElement("option");
+        opcao.value = item.nome;
+
+        sugestoesItens.appendChild(opcao);
+    }
+}
 
 function exportarInventario() {
     const itens = obterItens();
@@ -569,6 +613,7 @@ campoBusca.addEventListener("input", filtrarItens);
 filtroCategoria.addEventListener("change", filtrarItens);
 campoBusca.addEventListener("keydown", limparBusca);
 
+carregarSugestoes();
 carregarInventario();
 carregarOrdem();
 atualizarTotal();

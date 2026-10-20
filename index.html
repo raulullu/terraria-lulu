@@ -14,7 +14,8 @@
     <h2>Meu Inventário</h2>
     <p id="total-itens">Total de itens: 0</p>
 <label for="nome-item">Nome do item:</label>
-<input id="nome-item" type="text" placeholder="Ex.: Espelho Mágico">
+<input id="nome-item" type="text" placeholder="Ex.: Espelho Mágico" list="sugestoes-itens">
+<datalist id="sugestoes-itens"></datalist>
 <label for="quantidade-item">Quantidade:</label>
 <input id="quantidade-item" type="number" min="1" step="1" value="1">
 <label for="categoria-item">Categoria:</label>
@@ -62,7 +63,7 @@
 </p>
     <ul id="lista-itens"></ul>
     <p id="mensagem-busca" role="status"></p>
+    <script src="catalogo.js"></script>
     <script src="script.js"></script>
 </body>
-
 </html>
