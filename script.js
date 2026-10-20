@@ -72,6 +72,7 @@ if (itemEncontrado !== null) {
 
     campoNome.value = "";
     campoQuantidade.value = "1";
+    preencherCategoria();
     campoNome.focus();
 
     mostrarSucesso(`Item adicionado: ${item.nome}`);
@@ -159,10 +160,12 @@ function preencherCategoria() {
 
     if (itemEncontrado === null) {
         campoCategoria.value = "outros";
+        campoCategoria.disabled = false;
         return;
     }
 
     campoCategoria.value = itemEncontrado.categoria;
+    campoCategoria.disabled = true;
 }
 
 campoNome.addEventListener("input", preencherCategoria);
