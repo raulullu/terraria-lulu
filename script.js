@@ -13,6 +13,7 @@ const botaoExportar = document.getElementById("exportar-itens");
 const campoImportar = document.getElementById("importar-itens");
 const campoCategoria = document.getElementById("categoria-item");
 const filtroCategoria = document.getElementById("filtrar-categoria");
+const botaoLimparFiltros = document.getElementById("limpar-filtros");
 
 function mostrarSucesso(texto) {
     mensagemItem.classList.add("sucesso");
@@ -215,6 +216,16 @@ async function lerInventario() {
 }
 
 campoImportar.addEventListener("change", lerInventario);
+
+function limparFiltros() {
+    campoBusca.value = "";
+    filtroCategoria.value = "todas";
+
+    filtrarItens();
+    campoBusca.focus();
+}
+
+botaoLimparFiltros.addEventListener("click", limparFiltros);
 
 function exportarInventario() {
     const itens = obterItens();

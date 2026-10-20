@@ -211,3 +211,20 @@ select:focus-visible {
         margin-top: 6px;
     }
 }
+#limpar-filtros {
+    padding: 10px 16px;
+    margin-top: 8px;
+    background-color: #8be070;
+    color: #17251f;
+    border: none;
+    border-radius: 16px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    #limpar-filtros {
+        display: block;
+        width: 100%;
+    }
+}
