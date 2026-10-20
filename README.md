@@ -29,6 +29,8 @@ Projeto de estudo com HTML, CSS e JavaScript.
 - Filtrar por categoria em conjunto com a busca por nome.
 - Editar a categoria dos itens cadastrados.
 - Limpar a busca e o filtro de categoria com um botão.
+- Sugerir nomes a partir de um catálogo de itens.
+- Preencher e bloquear a categoria de itens reconhecidos no catálogo.
 
 ## Como executar
 

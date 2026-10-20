@@ -50,17 +50,19 @@ function adicionarItem() {
         mostrarErro("Digite uma quantidade inteira maior que zero.");
         campoQuantidade.focus();
         return;
-    }
+}
 
-    const itemEncontrado = buscarNoCatalogo(nome);
+const itemEncontrado = buscarNoCatalogo(nome);
 
 const item = {
+    catalogoId: null,
     nome: nome,
     quantidade: quantidade,
     categoria: campoCategoria.value
 };
 
 if (itemEncontrado !== null) {
+    item.catalogoId = itemEncontrado.id;
     item.nome = itemEncontrado.nome;
     item.categoria = itemEncontrado.categoria;
 }
@@ -131,7 +133,14 @@ function obterItens() {
 
         const categoria = item.dataset.categoria;
 
+        let catalogoId = item.dataset.catalogoId;
+
+        if (catalogoId === "") {
+            catalogoId = null;
+        }
+
         const itemSalvo = {
+            catalogoId: catalogoId,
             nome: nome,
             quantidade: quantidade,
             categoria: categoria
@@ -216,7 +225,15 @@ async function lerInventario() {
             categoriaValida(item.categoria) === false
           ) {
             throw new Error("Existe uma categoria inválida.");
-        }
+            }
+            if (item.catalogoId !== undefined && item.catalogoId !== null) {
+                if (
+                    typeof item.catalogoId !== "string" ||
+                    item.catalogoId.trim() === ""
+               ) {
+                   throw new Error("Existe um identificador de catálogo inválido.");
+    }
+}
 }
         const confirmou = window.confirm(
             "Este arquivo tem " + itens.length +
@@ -232,11 +249,12 @@ async function lerInventario() {
 
         for (const item of itens) {
             criarItem({
-        nome: item.nome.trim(),
-        quantidade: item.quantidade,
-        categoria: item.categoria
-        });
-        }
+    catalogoId: item.catalogoId,
+    nome: item.nome.trim(),
+    quantidade: item.quantidade,
+    categoria: item.categoria
+    });
+}
 
         salvarInventario();
         atualizarTotal();
@@ -410,6 +428,7 @@ function nomeDaCategoria(categoria) {
 }
 function criarItem(item) {
     const novoItem = document.createElement("li");
+    novoItem.dataset.catalogoId = item.catalogoId || "";
 
     const textoItem = document.createElement("span");
     textoItem.textContent = item.nome;
