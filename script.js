@@ -35,9 +35,9 @@ function avisarQuantidade(nome, quantidade) {
 }
 
 function buscarRegistroDoCatalogo(catalogoId) {
-    for (const linha of listaItens.children) {
-        if (linha.dataset.catalogoId === catalogoId) {
-            return linha;
+    for (const item of inventario) {
+        if (item.catalogoId === catalogoId) {
+            return item;
         }
     }
 
