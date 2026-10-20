@@ -16,6 +16,8 @@ const filtroCategoria = document.getElementById("filtrar-categoria");
 const botaoLimparFiltros = document.getElementById("limpar-filtros");
 const sugestoesItens = document.getElementById("sugestoes-itens");
 
+const inventario = [];
+
 function mostrarSucesso(texto) {
     mensagemItem.classList.add("sucesso");
     mensagemItem.textContent = texto;
@@ -108,19 +110,24 @@ function verificarTecla(evento) {
 }
 
 function atualizarTotal() {
-    const registros = listaItens.children.length;
+    const itens = obterItens();
+    const registros = itens.length;
     let totalUnidades = 0;
 
-    for (const item of listaItens.children) {
-        const quantidade = Number(
-            item.querySelector(".quantidade-exibida").value
-        );
-
-        totalUnidades = totalUnidades + quantidade;
+    for (const item of itens) {
+        totalUnidades = totalUnidades + item.quantidade;
     }
 
     totalItens.textContent =
-    `Registros: ${registros} | Unidades: ${totalUnidades}`;
+        `Registros: ${registros} | Unidades: ${totalUnidades}`;
+}
+
+function removerDoInventario(item) {
+    const posicao = inventario.indexOf(item);
+
+    if (posicao !== -1) {
+        inventario.splice(posicao, 1);
+    }
 }
 
 function removerUltimoItem() {
@@ -133,6 +140,7 @@ function removerUltimoItem() {
 
     const nome = ultimoItem.querySelector("span").textContent;
 
+    removerDoInventario(ultimoItem.dadosItem);
     ultimoItem.remove();
     atualizarTotal();
     salvarInventario();
@@ -143,34 +151,7 @@ function removerUltimoItem() {
 }
 
 function obterItens() {
-    const itens = [];
-
-    for (const item of listaItens.children) {
-        const nome = item.querySelector("span").textContent;
-
-        const quantidade = Number(
-            item.querySelector(".quantidade-exibida").value
-        );
-
-        const categoria = item.dataset.categoria;
-
-        let catalogoId = item.dataset.catalogoId;
-
-        if (catalogoId === "") {
-            catalogoId = null;
-        }
-
-        const itemSalvo = {
-            catalogoId: catalogoId,
-            nome: nome,
-            quantidade: quantidade,
-            categoria: categoria
-        };
-
-        itens.push(itemSalvo);
-    }
-
-    return itens;
+    return inventario;
 }
 
 function buscarNoCatalogo(nome) {
@@ -280,6 +261,7 @@ idsEncontrados.push(item.catalogoId);
             return;
         }
 
+        inventario.length = 0;
         listaItens.textContent = "";
 
         for (const item of itens) {
@@ -402,10 +384,16 @@ function ordenarItens() {
     });
 
     for (const item of itens) {
-        listaItens.appendChild(item);
-    }
+    listaItens.appendChild(item);
+}
 
-    salvarInventario();
+inventario.length = 0;
+
+for (const linha of listaItens.children) {
+    inventario.push(linha.dadosItem);
+}
+
+salvarInventario();
     localStorage.setItem("terraria-lulu-ordem", ordem);
 }
 
@@ -420,6 +408,7 @@ function carregarInventario() {
 
     const itens = JSON.parse(dados);
 
+    inventario.length = 0;
     listaItens.textContent = "";
 
     for (const item of itens) {
@@ -479,6 +468,15 @@ function criarItem(item) {
     item.categoria = itemDoCatalogo.categoria;
 }
     const novoItem = document.createElement("li");
+    if (item.catalogoId === undefined) {
+    item.catalogoId = null;
+}
+
+if (item.categoria === undefined) {
+    item.categoria = "outros";
+}
+
+novoItem.dadosItem = item;
     novoItem.dataset.catalogoId = item.catalogoId || "";
     const vinculadoAoCatalogo = novoItem.dataset.catalogoId !== "";
 
@@ -571,6 +569,7 @@ textoCategoria.addEventListener("change", atualizarCategoria);
     );
 
     function removerEsteItem() {
+        removerDoInventario(item);
         novoItem.remove();
         atualizarTotal();
         salvarInventario();
@@ -625,6 +624,7 @@ textoCategoria.addEventListener("change", atualizarCategoria);
 
     botaoRenomear.addEventListener("click", renomearItem);
     novoItem.insertBefore(botaoRenomear, botaoRemover);
+    inventario.push(item);
     listaItens.appendChild(novoItem);
 }
 
