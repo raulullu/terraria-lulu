@@ -414,6 +414,16 @@ function carregarOrdem() {
     }
 }
 
+function buscarNoCatalogoPorId(id) {
+    for (const item of catalogoItens) {
+        if (item.id === id) {
+            return item;
+        }
+    }
+
+    return null;
+}
+
 function nomeDaCategoria(categoria) {
     const nomes = {
         outros: "Outros",
@@ -427,8 +437,15 @@ function nomeDaCategoria(categoria) {
     return nomes[categoria];
 }
 function criarItem(item) {
+    const itemDoCatalogo = buscarNoCatalogoPorId(item.catalogoId);
+
+    if (itemDoCatalogo !== null) {
+    item.nome = itemDoCatalogo.nome;
+    item.categoria = itemDoCatalogo.categoria;
+}
     const novoItem = document.createElement("li");
     novoItem.dataset.catalogoId = item.catalogoId || "";
+    const vinculadoAoCatalogo = novoItem.dataset.catalogoId !== "";
 
     const textoItem = document.createElement("span");
     textoItem.textContent = item.nome;
@@ -451,6 +468,7 @@ function criarItem(item) {
     }
 
     textoCategoria.value = categoria;
+    textoCategoria.disabled = vinculadoAoCatalogo;
     novoItem.dataset.categoria = categoria;
 
 function atualizarCategoria() {
@@ -537,6 +555,7 @@ textoCategoria.addEventListener("change", atualizarCategoria);
     const botaoRenomear = document.createElement("button");
     botaoRenomear.type = "button";
     botaoRenomear.textContent = "Renomear";
+    botaoRenomear.disabled = vinculadoAoCatalogo;
     botaoRenomear.setAttribute("aria-label", "Renomear " + item.nome);
 
     function renomearItem() {
