@@ -25,6 +25,8 @@ Projeto de estudo com HTML, CSS e JavaScript.
 - Ordenar por nome de A a Z, de Z a A ou pela maior quantidade.
 - Ordenar por nome de A a Z ou de Z a A, e por quantidade crescente ou decrescente.
 - Exportar o inventário em JSON com data e horário no nome do arquivo.
+- Cadastrar categorias e preservá-las ao salvar, exportar e importar.
+- Filtrar por categoria em conjunto com a busca por nome.
 
 ## Como executar
 

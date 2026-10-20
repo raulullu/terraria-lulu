@@ -196,3 +196,18 @@ select:focus-visible {
     color: #b9c9bf;
     font-size: 13px;
 }
+#filtrar-categoria {
+    padding: 10px;
+    border: 1px solid #6d8976;
+    border-radius: 16px;
+    font-size: 16px;
+}
+
+@media (max-width: 600px) {
+    #filtrar-categoria {
+        display: block;
+        box-sizing: border-box;
+        width: 100%;
+        margin-top: 6px;
+    }
+}

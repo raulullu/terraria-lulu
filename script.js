@@ -12,6 +12,7 @@ const campoOrdem = document.getElementById("ordem-itens");
 const botaoExportar = document.getElementById("exportar-itens");
 const campoImportar = document.getElementById("importar-itens");
 const campoCategoria = document.getElementById("categoria-item");
+const filtroCategoria = document.getElementById("filtrar-categoria");
 
 function mostrarSucesso(texto) {
     mensagemItem.classList.add("sucesso");
@@ -473,15 +474,24 @@ function normalizarTexto(texto) {
 
 function filtrarItens() {
     const busca = normalizarTexto(campoBusca.value);
+    const categoria = filtroCategoria.value;
     let encontrados = 0;
 
-    botaoRemoverUltimo.disabled = busca !== "";
+    botaoRemoverUltimo.disabled =
+        busca !== "" || categoria !== "todas";
 
     for (const item of listaItens.children) {
-        const textoItem = item.querySelector("span");
-        const nome = normalizarTexto(textoItem.textContent);
+        const nome = normalizarTexto(
+            item.querySelector("span").textContent
+        );
 
-        if (nome.includes(busca)) {
+        const combinaNome = nome.includes(busca);
+
+        const combinaCategoria =
+            categoria === "todas" ||
+            item.dataset.categoria === categoria;
+
+        if (combinaNome && combinaCategoria) {
             item.style.display = "";
             encontrados = encontrados + 1;
         } else {
@@ -493,8 +503,9 @@ function filtrarItens() {
         mensagemBusca.textContent = "Seu inventário está vazio.";
     } else if (encontrados === 0) {
         mensagemBusca.textContent = "Nenhum item encontrado.";
-    } else if (busca !== "") {
-        mensagemBusca.textContent = "Registros encontrados: " + encontrados;
+    } else if (busca !== "" || categoria !== "todas") {
+        mensagemBusca.textContent =
+            `Registros encontrados: ${encontrados}`;
     } else {
         mensagemBusca.textContent = "";
     }
@@ -511,6 +522,7 @@ function limparBusca(evento) {
     }
 }
 campoBusca.addEventListener("input", filtrarItens);
+filtroCategoria.addEventListener("change", filtrarItens);
 campoBusca.addEventListener("keydown", limparBusca);
 
 carregarInventario();
