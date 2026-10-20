@@ -227,11 +227,19 @@ async function lerInventario() {
             throw new Error("Existe uma categoria inválida.");
             }
             if (item.catalogoId !== undefined && item.catalogoId !== null) {
-                if (
-                    typeof item.catalogoId !== "string" ||
-                    item.catalogoId.trim() === ""
-               ) {
-                   throw new Error("Existe um identificador de catálogo inválido.");
+    if (
+        typeof item.catalogoId !== "string" ||
+        item.catalogoId.trim() === ""
+    ) {
+        throw new Error("Existe um identificador de catálogo inválido.");
+    }
+
+    const itemDoCatalogo = buscarNoCatalogoPorId(item.catalogoId);
+
+    if (itemDoCatalogo === null) {
+        throw new Error(
+            `Item não encontrado no catálogo: ${item.catalogoId}.`
+        );
     }
 }
 }
