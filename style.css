@@ -228,3 +228,12 @@ select:focus-visible {
         width: 100%;
     }
 }
+#lista-itens .categoria-exibida {
+    max-width: 100%;
+    padding: 6px;
+    border: 1px solid #6d8976;
+    border-radius: 6px;
+    background-color: #17251f;
+    color: #f5f5f5;
+    font-size: 13px;
+}

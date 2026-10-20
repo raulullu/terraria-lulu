@@ -366,7 +366,17 @@ function criarItem(item) {
 
     const textoItem = document.createElement("span");
     textoItem.textContent = item.nome;
-    const textoCategoria = document.createElement("small");
+    const textoCategoria = document.createElement("select");
+    textoCategoria.className = "categoria-exibida";
+    textoCategoria.setAttribute("aria-label", "Categoria de " + item.nome);
+
+    for (const opcao of campoCategoria.options) {
+    const novaOpcao = document.createElement("option");
+    novaOpcao.value = opcao.value;
+    novaOpcao.textContent = opcao.textContent;
+
+    textoCategoria.appendChild(novaOpcao);
+}
 
     let categoria = item.categoria;
 
@@ -374,8 +384,30 @@ function criarItem(item) {
     categoria = "outros";
     }
 
-    textoCategoria.textContent = nomeDaCategoria(categoria);
+    textoCategoria.value = categoria;
     novoItem.dataset.categoria = categoria;
+
+function atualizarCategoria() {
+    const novaCategoria = textoCategoria.value;
+
+    if (categoriaValida(novaCategoria) === false) {
+        mostrarErro("Escolha uma categoria válida.");
+        textoCategoria.value = novoItem.dataset.categoria;
+        return;
+    }
+
+    item.categoria = novaCategoria;
+    novoItem.dataset.categoria = novaCategoria;
+
+    salvarInventario();
+    filtrarItens();
+
+    mostrarSucesso(
+        `Categoria de ${item.nome} atualizada para ${nomeDaCategoria(novaCategoria)}.`
+    );
+}
+
+textoCategoria.addEventListener("change", atualizarCategoria);
 
     const textoQuantidade = document.createElement("input");
     textoQuantidade.type = "number";
@@ -458,6 +490,7 @@ function criarItem(item) {
 
         item.nome = novoNome;
         textoItem.textContent = novoNome;
+        textoCategoria.setAttribute("aria-label", "Categoria de " + novoNome);
 
         textoQuantidade.setAttribute("aria-label", "Quantidade de " + novoNome);
         botaoRemover.setAttribute("aria-label", "Remover " + novoNome);
