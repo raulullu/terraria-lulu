@@ -11,6 +11,7 @@ const botaoOrdenar = document.getElementById("ordenar-itens");
 const campoOrdem = document.getElementById("ordem-itens");
 const botaoExportar = document.getElementById("exportar-itens");
 const campoImportar = document.getElementById("importar-itens");
+const campoCategoria = document.getElementById("categoria-item");
 
 function mostrarSucesso(texto) {
     mensagemItem.classList.add("sucesso");
@@ -49,9 +50,10 @@ function adicionarItem() {
     }
 
     const item = {
-        nome: nome,
-        quantidade: quantidade
-    };
+    nome: nome,
+    quantidade: quantidade,
+    categoria: campoCategoria.value
+};
 
     criarItem(item);
     filtrarItens();
@@ -111,19 +113,36 @@ function obterItens() {
 
     for (const item of listaItens.children) {
         const nome = item.querySelector("span").textContent;
+
         const quantidade = Number(
             item.querySelector(".quantidade-exibida").value
         );
 
+        const categoria = item.dataset.categoria;
+
         const itemSalvo = {
             nome: nome,
-            quantidade: quantidade
+            quantidade: quantidade,
+            categoria: categoria
         };
 
         itens.push(itemSalvo);
     }
 
     return itens;
+}
+
+function categoriaValida(categoria) {
+    const categorias = [
+        "outros",
+        "materiais",
+        "armas",
+        "acessorios",
+        "armaduras",
+        "consumiveis"
+    ];
+
+    return categorias.includes(categoria);
 }
 
 async function lerInventario() {
@@ -154,8 +173,13 @@ async function lerInventario() {
             if (quantidadeValida(item.quantidade) === false) {
                 throw new Error("Existe uma quantidade inválida.");
             }
+            if (
+            item.categoria !== undefined &&
+            categoriaValida(item.categoria) === false
+          ) {
+            throw new Error("Existe uma categoria inválida.");
         }
-
+}
         const confirmou = window.confirm(
             "Este arquivo tem " + itens.length +
             " registros e substituirá todo o inventário atual. Deseja continuar?"
@@ -170,9 +194,10 @@ async function lerInventario() {
 
         for (const item of itens) {
             criarItem({
-                nome: item.nome.trim(),
-                quantidade: item.quantidade
-            });
+        nome: item.nome.trim(),
+        quantidade: item.quantidade,
+        categoria: item.categoria
+        });
         }
 
         salvarInventario();
@@ -312,11 +337,33 @@ function carregarOrdem() {
     }
 }
 
+function nomeDaCategoria(categoria) {
+    const nomes = {
+        outros: "Outros",
+        materiais: "Materiais",
+        armas: "Armas",
+        acessorios: "Acessórios",
+        armaduras: "Armaduras",
+        consumiveis: "Consumíveis"
+    };
+
+    return nomes[categoria];
+}
 function criarItem(item) {
     const novoItem = document.createElement("li");
 
     const textoItem = document.createElement("span");
     textoItem.textContent = item.nome;
+    const textoCategoria = document.createElement("small");
+
+    let categoria = item.categoria;
+
+    if (categoria === undefined) {
+    categoria = "outros";
+    }
+
+    textoCategoria.textContent = nomeDaCategoria(categoria);
+    novoItem.dataset.categoria = categoria;
 
     const textoQuantidade = document.createElement("input");
     textoQuantidade.type = "number";
@@ -373,6 +420,7 @@ function criarItem(item) {
     botaoRemover.addEventListener("click", removerEsteItem);
 
     novoItem.appendChild(textoItem);
+    novoItem.appendChild(textoCategoria);
     novoItem.appendChild(textoQuantidade);
     novoItem.appendChild(botaoRemover);
 

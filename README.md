@@ -24,7 +24,7 @@ Projeto de estudo com HTML, CSS e JavaScript.
 - Retornar o foco ao campo de nome após remover um item.
 - Ordenar por nome de A a Z, de Z a A ou pela maior quantidade.
 - Ordenar por nome de A a Z ou de Z a A, e por quantidade crescente ou decrescente.
-- Exportar o inventário em JSON com a data no nome do arquivo.
+- Exportar o inventário em JSON com data e horário no nome do arquivo.
 
 ## Como executar
 
