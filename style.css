@@ -242,3 +242,12 @@ select:focus-visible {
     opacity: 0.6;
     cursor: not-allowed;
 }
+#lista-itens .botao-quantidade {
+    background-color: #8be070;
+    color: #17251f;
+    min-width: 44px;
+}
+
+#lista-itens .botao-quantidade:hover {
+    background-color: #a5ed8f;
+}

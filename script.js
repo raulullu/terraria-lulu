@@ -553,6 +553,21 @@ textoCategoria.addEventListener("change", atualizarCategoria);
     }
 
     textoQuantidade.addEventListener("change", atualizarQuantidade);
+    const botaoAumentar = document.createElement("button");
+    botaoAumentar.type = "button";
+botaoAumentar.textContent = "+1";
+botaoAumentar.className = "botao-quantidade";
+botaoAumentar.setAttribute(
+    "aria-label",
+    "Adicionar uma unidade de " + item.nome
+);
+
+function aumentarQuantidade() {
+    textoQuantidade.value = item.quantidade + 1;
+    atualizarQuantidade();
+}
+
+botaoAumentar.addEventListener("click", aumentarQuantidade);
 
     const botaoRemover = document.createElement("button");
     botaoRemover.type = "button";
@@ -579,6 +594,7 @@ textoCategoria.addEventListener("change", atualizarCategoria);
     novoItem.appendChild(textoItem);
     novoItem.appendChild(textoCategoria);
     novoItem.appendChild(textoQuantidade);
+    novoItem.appendChild(botaoAumentar);
     novoItem.appendChild(botaoRemover);
 
     const botaoRenomear = document.createElement("button");
@@ -604,6 +620,10 @@ textoCategoria.addEventListener("change", atualizarCategoria);
 
         item.nome = novoNome;
         textoItem.textContent = novoNome;
+        botaoAumentar.setAttribute(
+        "aria-label",
+        "Adicionar uma unidade de " + novoNome
+        );
         textoCategoria.setAttribute("aria-label", "Categoria de " + novoNome);
 
         textoQuantidade.setAttribute("aria-label", "Quantidade de " + novoNome);
