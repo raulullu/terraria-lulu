@@ -631,7 +631,14 @@ function normalizarTexto(texto) {
 
 function carregarCategorias() {
     campoCategoria.textContent = "";
+    filtroCategoria.textContent = "";
 
+    const opcaoTodas = document.createElement("option");
+    opcaoTodas.value = "todas";
+    opcaoTodas.textContent = "Todas";
+
+    filtroCategoria.appendChild(opcaoTodas);
+    
     for (const categoria of Object.keys(categoriasItens)) {
         const opcaoCadastro = document.createElement("option");
 
