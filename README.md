@@ -33,7 +33,7 @@ Projeto de estudo com HTML, CSS e JavaScript.
 - Adaptar o layout para telas menores.
 - Identificar campos e botões para leitores de tela.
 - Destacar o foco ao navegar pelo teclado.
-- Aumentar a quantidade de um item pelo botão +1.
+- Aumentar ou diminuir quantidades pelos botões +1 e −1, mantendo o mínimo de uma unidade.
 
 ## Organização do código
 
