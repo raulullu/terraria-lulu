@@ -32,10 +32,6 @@ function avisarQuantidade(nome, quantidade) {
     );
 }
 
-function quantidadeValida(quantidade) {
-    return Number.isInteger(quantidade) && quantidade > 0;
-}
-
 function adicionarItem() {
     const nome = campoNome.value.trim();
     const quantidade = Number(campoQuantidade.value);
@@ -99,11 +95,7 @@ function verificarTecla(evento) {
 function atualizarTotal() {
     const itens = obterItens();
     const registros = itens.length;
-    let totalUnidades = 0;
-
-    for (const item of itens) {
-        totalUnidades = totalUnidades + item.quantidade;
-    }
+    const totalUnidades = calcularTotalUnidades(itens);
 
     totalItens.textContent =
         `Registros: ${registros} | Unidades: ${totalUnidades}`;

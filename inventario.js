@@ -21,3 +21,17 @@ function buscarRegistroDoCatalogo(catalogoId) {
 
     return null;
 }
+
+function calcularTotalUnidades(itens) {
+    let total = 0;
+
+    for (const item of itens) {
+        total = total + item.quantidade;
+    }
+
+    return total;
+}
+
+function quantidadeValida(quantidade) {
+    return Number.isInteger(quantidade) && quantidade > 0;
+}
