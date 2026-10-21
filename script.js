@@ -546,6 +546,7 @@ textoCategoria.addEventListener("change", atualizarCategoria);
         item.quantidade = quantidade;
 
         atualizarTotal();
+        filtrarItens();
         salvarInventario();
         avisarQuantidade(item.nome, quantidade);
     }
@@ -633,6 +634,7 @@ function filtrarItens() {
     const busca = normalizarTexto(campoBusca.value);
     const categoria = filtroCategoria.value;
     let encontrados = 0;
+    let unidadesEncontradas = 0;
 
     botaoRemoverUltimo.disabled =
         busca !== "" || categoria !== "todas";
@@ -650,6 +652,7 @@ function filtrarItens() {
     if (combinaNome && combinaCategoria) {
         linha.style.display = "";
         encontrados = encontrados + 1;
+        unidadesEncontradas = unidadesEncontradas + item.quantidade;
     } else {
         linha.style.display = "none";
     }
@@ -661,7 +664,7 @@ function filtrarItens() {
         mensagemBusca.textContent = "Nenhum item encontrado.";
     } else if (busca !== "" || categoria !== "todas") {
         mensagemBusca.textContent =
-            `Registros encontrados: ${encontrados}`;
+            `Registros encontrados: ${encontrados} | Unidades: ${unidadesEncontradas}`;
     } else {
         mensagemBusca.textContent = "";
     }
