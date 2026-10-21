@@ -90,7 +90,7 @@ if (item.catalogoId !== null) {
         return;
     }
 }
-    criarItem(item);
+    registrarItem(item);
     filtrarItens();
     atualizarTotal();
     salvarInventario();
@@ -265,7 +265,7 @@ idsEncontrados.push(item.catalogoId);
         listaItens.textContent = "";
 
         for (const item of itens) {
-            criarItem({
+            registrarItem({
     catalogoId: item.catalogoId,
     nome: item.nome.trim(),
     quantidade: item.quantidade,
@@ -354,8 +354,7 @@ function salvarInventario() {
 
 function ordenarItens() {
     const ordem = campoOrdem.value;
-    const linhas = Array.from(listaItens.children);
-
+    
     inventario.sort(function (primeiro, segundo) {
         if (ordem === "menor-quantidade") {
             return primeiro.quantidade - segundo.quantidade;
@@ -372,15 +371,7 @@ function ordenarItens() {
         return primeiro.nome.localeCompare(segundo.nome, "pt-BR");
     });
 
-    for (const item of inventario) {
-        const linha = linhas.find(function (linhaExistente) {
-            return linhaExistente.dadosItem === item;
-        });
-
-        if (linha !== undefined) {
-            listaItens.appendChild(linha);
-        }
-    }
+    renderizarInventario();
 
     salvarInventario();
     localStorage.setItem("terraria-lulu-ordem", ordem);
@@ -407,9 +398,9 @@ function carregarInventario() {
                 quantidade: 1
             };
 
-            criarItem(itemConvertido);
+            registrarItem(itemConvertido);
         } else {
-            criarItem(item);
+            registrarItem(item);
         }
     }
 }
@@ -435,6 +426,22 @@ function buscarNoCatalogoPorId(id) {
     }
 
     return null;
+}
+
+function registrarItem(item) {
+    criarItem(item);
+    inventario.push(item);
+}
+
+function renderizarInventario() {
+    listaItens.textContent = "";
+
+    for (const item of inventario) {
+        criarItem(item);
+    }
+
+    atualizarTotal();
+    filtrarItens();
 }
 
 function nomeDaCategoria(categoria) {
@@ -613,7 +620,7 @@ textoCategoria.addEventListener("change", atualizarCategoria);
 
     botaoRenomear.addEventListener("click", renomearItem);
     novoItem.insertBefore(botaoRenomear, botaoRemover);
-    inventario.push(item);
+    
     listaItens.appendChild(novoItem);
 }
 
