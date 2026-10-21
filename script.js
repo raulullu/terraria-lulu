@@ -710,6 +710,7 @@ campoBusca.addEventListener("input", filtrarItens);
 filtroCategoria.addEventListener("change", filtrarItens);
 campoBusca.addEventListener("keydown", limparBusca);
 
+validarCatalogo();
 carregarCategorias();
 carregarSugestoes();
 carregarInventario();
