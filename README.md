@@ -1,7 +1,11 @@
 # Terraria Lulu
 
 Aplicativo para organizar meu inventário no Terraria.
-Projeto de estudo com HTML, CSS e JavaScript.
+
+## Sobre o desenvolvimento
+
+Projeto em desenvolvimento, criado para aprender HTML, CSS,
+JavaScript e Git, com apoio de IA e implementação passo a passo.
 
 ## Funcionalidades
 
