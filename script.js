@@ -145,19 +145,6 @@ function preencherCategoria() {
 
 campoNome.addEventListener("input", preencherCategoria);
 
-function categoriaValida(categoria) {
-    const categorias = [
-        "outros",
-        "materiais",
-        "armas",
-        "acessorios",
-        "armaduras",
-        "consumiveis"
-    ];
-
-    return categorias.includes(categoria);
-}
-
 async function lerInventario() {
     mensagemItem.classList.remove("sucesso");
     const arquivo = campoImportar.files[0];
@@ -384,35 +371,6 @@ function carregarOrdem() {
     }
 }
 
-function buscarNoCatalogoPorId(id) {
-    for (const item of catalogoItens) {
-        if (item.id === id) {
-            return item;
-        }
-    }
-
-    return null;
-}
-
-function registrarItem(item) {
-    if (item.catalogoId === undefined) {
-        item.catalogoId = null;
-    }
-
-    if (item.categoria === undefined) {
-        item.categoria = "outros";
-    }
-
-    const itemDoCatalogo = buscarNoCatalogoPorId(item.catalogoId);
-
-    if (itemDoCatalogo !== null) {
-        item.nome = itemDoCatalogo.nome;
-        item.categoria = itemDoCatalogo.categoria;
-    }
-
-    inventario.push(item);
-}
-
 function renderizarInventario() {
     listaItens.textContent = "";
 
@@ -424,18 +382,6 @@ function renderizarInventario() {
     filtrarItens();
 }
 
-function nomeDaCategoria(categoria) {
-    const nomes = {
-        outros: "Outros",
-        materiais: "Materiais",
-        armas: "Armas",
-        acessorios: "Acessórios",
-        armaduras: "Armaduras",
-        consumiveis: "Consumíveis"
-    };
-
-    return nomes[categoria];
-}
 function criarItem(item) {
     const novoItem = document.createElement("li");
     novoItem.dadosItem = item;
@@ -683,6 +629,26 @@ function normalizarTexto(texto) {
         .replace(/[\u0300-\u036f]/g, "");
 }
 
+function carregarCategorias() {
+    campoCategoria.textContent = "";
+
+    for (const categoria of Object.keys(categoriasItens)) {
+        const opcaoCadastro = document.createElement("option");
+
+        opcaoCadastro.value = categoria;
+        opcaoCadastro.textContent = nomeDaCategoria(categoria);
+
+        campoCategoria.appendChild(opcaoCadastro);
+
+        const opcaoFiltro = document.createElement("option");
+
+        opcaoFiltro.value = categoria;
+        opcaoFiltro.textContent = nomeDaCategoria(categoria);
+
+        filtroCategoria.appendChild(opcaoFiltro);
+    }
+}
+
 function filtrarItens() {
     const busca = normalizarTexto(campoBusca.value);
     const categoria = filtroCategoria.value;
@@ -737,6 +703,7 @@ campoBusca.addEventListener("input", filtrarItens);
 filtroCategoria.addEventListener("change", filtrarItens);
 campoBusca.addEventListener("keydown", limparBusca);
 
+carregarCategorias();
 carregarSugestoes();
 carregarInventario();
 carregarOrdem();
