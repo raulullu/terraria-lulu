@@ -563,7 +563,15 @@ botaoAumentar.setAttribute(
 );
 
 function aumentarQuantidade() {
-    textoQuantidade.value = item.quantidade + 1;
+    const quantidadeAtual = Number(textoQuantidade.value);
+
+    if (quantidadeValida(quantidadeAtual) === false) {
+        mostrarErro("Digite uma quantidade inteira maior que zero.");
+        textoQuantidade.focus();
+        return;
+    }
+
+    textoQuantidade.value = quantidadeAtual + 1;
     atualizarQuantidade();
 }
 
@@ -579,12 +587,20 @@ botaoDiminuir.setAttribute(
 );
 
 function diminuirQuantidade() {
-    if (item.quantidade <= 1) {
+    const quantidadeAtual = Number(textoQuantidade.value);
+
+    if (quantidadeValida(quantidadeAtual) === false) {
+        mostrarErro("Digite uma quantidade inteira maior que zero.");
+        textoQuantidade.focus();
+        return;
+    }
+
+    if (quantidadeAtual <= 1) {
         mostrarErro("Para excluir este item, use o botão Remover.");
         return;
     }
 
-    textoQuantidade.value = item.quantidade - 1;
+    textoQuantidade.value = quantidadeAtual - 1;
     atualizarQuantidade();
 }
 
