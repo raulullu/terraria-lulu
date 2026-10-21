@@ -43,8 +43,9 @@ JavaScript e Git, com apoio de IA e implementação passo a passo.
 
 - index.html: estrutura e conteúdo da página.
 - style.css: aparência, layout responsivo e indicação visual de foco.
-- catalogo.js: catálogo de referência com identificadores, nomes e categorias.
-- script.js: comportamentos, validações, filtros, ordenação e persistência.
+- catalogo.js: catálogo de referência e consulta de itens por identificador.
+- inventario.js: dados do inventário, registro, remoção, cálculo de unidades e validação de quantidade.
+- script.js: interação com a página, mensagens, filtros, ordenação, importação, exportação e persistência.
 
 O inventário é mantido em um array de objetos.
 O registro dos dados é separado da renderização da lista na tela.
@@ -66,3 +67,8 @@ Para restaurá-la, selecione o arquivo em Importar inventário e confirme a subs
 
 O Git e o GitHub guardam as versões do código.
 Os arquivos JSON exportados guardam os dados do inventário.
+
+## Estado atual
+
+O catálogo contém poucos itens de exemplo e será ampliado.
+Durante o desenvolvimento, o aplicativo também permite cadastrar itens manualmente.

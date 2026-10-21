@@ -35,3 +35,22 @@ function calcularTotalUnidades(itens) {
 function quantidadeValida(quantidade) {
     return Number.isInteger(quantidade) && quantidade > 0;
 }
+
+function registrarItem(item) {
+    if (item.catalogoId === undefined) {
+        item.catalogoId = null;
+    }
+
+    if (item.categoria === undefined) {
+        item.categoria = "outros";
+    }
+
+    const itemDoCatalogo = buscarNoCatalogoPorId(item.catalogoId);
+
+    if (itemDoCatalogo !== null) {
+        item.nome = itemDoCatalogo.nome;
+        item.categoria = itemDoCatalogo.categoria;
+    }
+
+    inventario.push(item);
+}
