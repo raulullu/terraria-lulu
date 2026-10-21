@@ -38,6 +38,7 @@ JavaScript e Git, com apoio de IA e implementação passo a passo.
 - Identificar campos e botões para leitores de tela.
 - Destacar o foco ao navegar pelo teclado.
 - Aumentar ou diminuir quantidades pelos botões +1 e −1, mantendo o mínimo de uma unidade.
+- Validar o catálogo ao iniciar, identificando IDs inválidos ou repetidos, nomes inválidos e categorias desconhecidas.
 
 ## Organização do código
 
