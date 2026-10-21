@@ -427,6 +427,21 @@ function buscarNoCatalogoPorId(id) {
 }
 
 function registrarItem(item) {
+    if (item.catalogoId === undefined) {
+        item.catalogoId = null;
+    }
+
+    if (item.categoria === undefined) {
+        item.categoria = "outros";
+    }
+
+    const itemDoCatalogo = buscarNoCatalogoPorId(item.catalogoId);
+
+    if (itemDoCatalogo !== null) {
+        item.nome = itemDoCatalogo.nome;
+        item.categoria = itemDoCatalogo.categoria;
+    }
+
     inventario.push(item);
 }
 
@@ -454,22 +469,8 @@ function nomeDaCategoria(categoria) {
     return nomes[categoria];
 }
 function criarItem(item) {
-    const itemDoCatalogo = buscarNoCatalogoPorId(item.catalogoId);
-
-    if (itemDoCatalogo !== null) {
-    item.nome = itemDoCatalogo.nome;
-    item.categoria = itemDoCatalogo.categoria;
-}
     const novoItem = document.createElement("li");
-    if (item.catalogoId === undefined) {
-    item.catalogoId = null;
-}
-
-if (item.categoria === undefined) {
-    item.categoria = "outros";
-}
-
-novoItem.dadosItem = item;
+    novoItem.dadosItem = item;
     novoItem.dataset.catalogoId = item.catalogoId || "";
     const vinculadoAoCatalogo = novoItem.dataset.catalogoId !== "";
 
