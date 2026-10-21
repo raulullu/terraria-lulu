@@ -251,3 +251,11 @@ select:focus-visible {
 #lista-itens .botao-quantidade:hover {
     background-color: #a5ed8f;
 }
+#lista-itens .botao-diminuir {
+    background-color: #f0a5a5;
+    color: #17251f;
+}
+
+#lista-itens .botao-diminuir:hover {
+    background-color: #e78b8b;
+}

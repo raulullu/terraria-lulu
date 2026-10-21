@@ -569,6 +569,27 @@ function aumentarQuantidade() {
 
 botaoAumentar.addEventListener("click", aumentarQuantidade);
 
+const botaoDiminuir = document.createElement("button");
+botaoDiminuir.type = "button";
+botaoDiminuir.textContent = "−1";
+botaoDiminuir.className = "botao-quantidade botao-diminuir";
+botaoDiminuir.setAttribute(
+    "aria-label",
+    "Retirar uma unidade de " + item.nome
+);
+
+function diminuirQuantidade() {
+    if (item.quantidade <= 1) {
+        mostrarErro("Para excluir este item, use o botão Remover.");
+        return;
+    }
+
+    textoQuantidade.value = item.quantidade - 1;
+    atualizarQuantidade();
+}
+
+botaoDiminuir.addEventListener("click", diminuirQuantidade);
+
     const botaoRemover = document.createElement("button");
     botaoRemover.type = "button";
     botaoRemover.textContent = "Remover";
@@ -593,6 +614,7 @@ botaoAumentar.addEventListener("click", aumentarQuantidade);
 
     novoItem.appendChild(textoItem);
     novoItem.appendChild(textoCategoria);
+    novoItem.appendChild(botaoDiminuir);
     novoItem.appendChild(textoQuantidade);
     novoItem.appendChild(botaoAumentar);
     novoItem.appendChild(botaoRemover);
@@ -603,7 +625,7 @@ botaoAumentar.addEventListener("click", aumentarQuantidade);
     botaoRenomear.disabled = vinculadoAoCatalogo;
     botaoRenomear.setAttribute("aria-label", "Renomear " + item.nome);
 
-    function renomearItem() {
+function renomearItem() {
         mensagemItem.classList.remove("sucesso");
         const resposta = window.prompt("Novo nome do item:", item.nome);
 
@@ -620,6 +642,10 @@ botaoAumentar.addEventListener("click", aumentarQuantidade);
 
         item.nome = novoNome;
         textoItem.textContent = novoNome;
+        botaoDiminuir.setAttribute(
+        "aria-label",
+        "Retirar uma unidade de " + novoNome
+);
         botaoAumentar.setAttribute(
         "aria-label",
         "Adicionar uma unidade de " + novoNome
