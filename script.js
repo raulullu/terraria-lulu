@@ -16,8 +16,6 @@ const filtroCategoria = document.getElementById("filtrar-categoria");
 const botaoLimparFiltros = document.getElementById("limpar-filtros");
 const sugestoesItens = document.getElementById("sugestoes-itens");
 
-const inventario = [];
-
 function mostrarSucesso(texto) {
     mensagemItem.classList.add("sucesso");
     mensagemItem.textContent = texto;
@@ -32,16 +30,6 @@ function avisarQuantidade(nome, quantidade) {
     mostrarSucesso(
         `Quantidade de ${nome} atualizada para ${quantidade}.`
     );
-}
-
-function buscarRegistroDoCatalogo(catalogoId) {
-    for (const item of inventario) {
-        if (item.catalogoId === catalogoId) {
-            return item;
-        }
-    }
-
-    return null;
 }
 
 function quantidadeValida(quantidade) {
@@ -121,14 +109,6 @@ function atualizarTotal() {
         `Registros: ${registros} | Unidades: ${totalUnidades}`;
 }
 
-function removerDoInventario(item) {
-    const posicao = inventario.indexOf(item);
-
-    if (posicao !== -1) {
-        inventario.splice(posicao, 1);
-    }
-}
-
 function removerUltimoItem() {
     if (inventario.length === 0) {
         mostrarErro("Não há itens para remover.");
@@ -144,10 +124,6 @@ function removerUltimoItem() {
 
     campoNome.focus();
     mostrarSucesso(`Item removido: ${nome}`);
-}
-
-function obterItens() {
-    return inventario;
 }
 
 function buscarNoCatalogo(nome) {
@@ -553,6 +529,28 @@ textoCategoria.addEventListener("change", atualizarCategoria);
     }
 
     textoQuantidade.addEventListener("change", atualizarQuantidade);
+    function confirmarQuantidade(evento) {
+    if (evento.key !== "Enter") {
+        return;
+    }
+
+    evento.preventDefault();
+
+    const quantidade = Number(textoQuantidade.value);
+
+    if (quantidadeValida(quantidade) === false) {
+        mostrarErro("Digite uma quantidade inteira maior que zero.");
+        textoQuantidade.value = item.quantidade;
+        textoQuantidade.focus();
+        textoQuantidade.select();
+        return;
+    }
+
+    textoQuantidade.blur();
+    campoNome.focus();
+}
+
+textoQuantidade.addEventListener("keydown", confirmarQuantidade);
     const botaoAumentar = document.createElement("button");
     botaoAumentar.type = "button";
 botaoAumentar.textContent = "+1";
