@@ -633,26 +633,25 @@ function filtrarItens() {
     botaoRemoverUltimo.disabled =
         busca !== "" || categoria !== "todas";
 
-    for (const item of listaItens.children) {
-        const nome = normalizarTexto(
-            item.querySelector("span").textContent
-        );
+    for (const linha of listaItens.children) {
+    const item = linha.dadosItem;
+    const nome = normalizarTexto(item.nome);
 
-        const combinaNome = nome.includes(busca);
+    const combinaNome = nome.includes(busca);
 
-        const combinaCategoria =
-            categoria === "todas" ||
-            item.dataset.categoria === categoria;
+    const combinaCategoria =
+        categoria === "todas" ||
+        item.categoria === categoria;
 
-        if (combinaNome && combinaCategoria) {
-            item.style.display = "";
-            encontrados = encontrados + 1;
-        } else {
-            item.style.display = "none";
-        }
+    if (combinaNome && combinaCategoria) {
+        linha.style.display = "";
+        encontrados = encontrados + 1;
+    } else {
+        linha.style.display = "none";
     }
+}
 
-    if (listaItens.children.length === 0) {
+    if (inventario.length === 0) {
         mensagemBusca.textContent = "Seu inventário está vazio.";
     } else if (encontrados === 0) {
         mensagemBusca.textContent = "Nenhum item encontrado.";
