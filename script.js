@@ -131,23 +131,20 @@ function removerDoInventario(item) {
 }
 
 function removerUltimoItem() {
-    const ultimoItem = listaItens.lastElementChild;
-
-    if (ultimoItem === null) {
+    if (inventario.length === 0) {
         mostrarErro("Não há itens para remover.");
         return;
     }
 
-    const nome = ultimoItem.querySelector("span").textContent;
+    const ultimoItem = inventario[inventario.length - 1];
+    const nome = ultimoItem.nome;
 
-    removerDoInventario(ultimoItem.dadosItem);
-    ultimoItem.remove();
-    atualizarTotal();
+    removerDoInventario(ultimoItem);
+    renderizarInventario();
     salvarInventario();
-    filtrarItens();
-    campoNome.focus();
 
-    mostrarSucesso("Item removido: " + nome);
+    campoNome.focus();
+    mostrarSucesso(`Item removido: ${nome}`);
 }
 
 function obterItens() {
@@ -565,15 +562,15 @@ textoCategoria.addEventListener("change", atualizarCategoria);
     );
 
     function removerEsteItem() {
-        removerDoInventario(item);
-        novoItem.remove();
-        atualizarTotal();
-        salvarInventario();
-        filtrarItens();
-        campoNome.focus();
+    const nome = item.nome;
 
-        mostrarSucesso("Item removido: " + item.nome);
-    }
+    removerDoInventario(item);
+    renderizarInventario();
+    salvarInventario();
+
+    campoNome.focus();
+    mostrarSucesso(`Item removido: ${nome}`);
+}
 
     botaoRemover.addEventListener("click", removerEsteItem);
 
