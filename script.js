@@ -1,719 +1,262 @@
-const campoNome = document.getElementById("nome-item");
-const botaoAdicionar = document.getElementById("adicionar-item");
-const listaItens = document.getElementById("lista-itens");
-const totalItens = document.getElementById("total-itens");
-const mensagemItem = document.getElementById("mensagem-item");
-const campoBusca = document.getElementById("buscar-item");
-const campoQuantidade = document.getElementById("quantidade-item");
-const botaoRemoverUltimo = document.getElementById("remover-ultimo");
-const mensagemBusca = document.getElementById("mensagem-busca");
-const botaoOrdenar = document.getElementById("ordenar-itens");
-const campoOrdem = document.getElementById("ordem-itens");
-const botaoExportar = document.getElementById("exportar-itens");
-const campoImportar = document.getElementById("importar-itens");
-const campoCategoria = document.getElementById("categoria-item");
-const filtroCategoria = document.getElementById("filtrar-categoria");
-const botaoLimparFiltros = document.getElementById("limpar-filtros");
-const sugestoesItens = document.getElementById("sugestoes-itens");
+import { validarCatalogo } from "./catalogo.js";
+import { adicionarItem, alterarQuantidade, alterarCategoria, renomearItem, removerItem, quantidadeValida, ERRO_QUANTIDADE } from "./inventario.js";
+import { copiarItens } from "./utilidades.js";
+import {
+    carregarInventario, salvarInventario, carregarOrdem, salvarOrdem,
+    lerArquivoInventario, exportarInventario, exportarDadosSalvos,
+} from "./armazenamento.js";
+import {
+    elementos as el, prepararCampos, preencherCategoria, limparCadastro, mostrarMensagem,
+    renderizarInventario, combinaFiltros, temFiltros, confirmarSubstituicao, pedirNovoNome,
+} from "./interface.js";
 
-function mostrarSucesso(texto) {
-    mensagemItem.classList.add("sucesso");
-    mensagemItem.textContent = texto;
+let itens = [];
+let ordem = "cadastro";
+let bloqueado = false;
+let ultimaRemocao = null;
+
+function atualizarTela() {
+    renderizarInventario(itens, ordem, { bloqueado, podeDesfazer: ultimaRemocao !== null });
 }
 
-function mostrarErro(texto) {
-    mensagemItem.classList.remove("sucesso");
-    mensagemItem.textContent = texto;
+function verificarDisponibilidade() {
+    if (bloqueado) throw new Error("Resolva o carregamento pelas opções de recuperação antes de alterar o inventário.");
 }
 
-function avisarQuantidade(nome, quantidade) {
-    mostrarSucesso(
-        `Quantidade de ${nome} atualizada para ${quantidade}.`
-    );
+function aplicarAlteracao(novosItens, { permitirRecuperacao = false, guardarRemocao = false } = {}) {
+    if (!permitirRecuperacao) verificarDisponibilidade();
+    // A gravação acontece antes de trocar o estado da aplicação.
+    salvarInventario(novosItens);
+    const anteriores = copiarItens(itens);
+    itens = copiarItens(novosItens);
+    ultimaRemocao = guardarRemocao ? anteriores : null;
+    bloqueado = false;
+    atualizarTela();
 }
 
-function adicionarItem() {
-    const nome = campoNome.value.trim();
-    const quantidade = Number(campoQuantidade.value);
-
-    if (nome === "") {
-        mostrarErro("Digite o nome de um item.");
-        campoNome.focus();
-        return;
-    }
-
-    if (quantidadeValida(quantidade) === false) {
-        mostrarErro("Digite uma quantidade inteira maior que zero.");
-        campoQuantidade.focus();
-        return;
-}
-
-const itemEncontrado = buscarNoCatalogo(nome);
-
-const item = {
-    catalogoId: null,
-    nome: nome,
-    quantidade: quantidade,
-    categoria: campoCategoria.value
-};
-
-if (itemEncontrado !== null) {
-    item.catalogoId = itemEncontrado.id;
-    item.nome = itemEncontrado.nome;
-    item.categoria = itemEncontrado.categoria;
-}
-if (item.catalogoId !== null) {
-    const registroExistente = buscarRegistroDoCatalogo(item.catalogoId);
-
-    if (registroExistente !== null) {
-        mostrarErro(
-            `${item.nome} já está no inventário. Edite a quantidade na linha existente.`
-        );
-
-        campoNome.focus();
-        return;
-    }
-}
-    registrarItem(item);
-    renderizarInventario();
-    salvarInventario();
-
-    campoNome.value = "";
-    campoQuantidade.value = "1";
-    preencherCategoria();
-    campoNome.focus();
-
-    mostrarSucesso(`Item adicionado: ${item.nome}`);
-}
-
-function verificarTecla(evento) {
-    if (evento.key === "Enter") {
-        adicionarItem();
-    }
-}
-
-function atualizarTotal() {
-    const itens = obterItens();
-    const registros = itens.length;
-    const totalUnidades = calcularTotalUnidades(itens);
-
-    totalItens.textContent =
-        `Registros: ${registros} | Unidades: ${totalUnidades}`;
-}
-
-function removerUltimoItem() {
-    if (inventario.length === 0) {
-        mostrarErro("Não há itens para remover.");
-        return;
-    }
-
-    const ultimoItem = inventario[inventario.length - 1];
-    const nome = ultimoItem.nome;
-
-    removerDoInventario(ultimoItem);
-    renderizarInventario();
-    salvarInventario();
-
-    campoNome.focus();
-    mostrarSucesso(`Item removido: ${nome}`);
-}
-
-function buscarNoCatalogo(nome) {
-    const nomeBuscado = normalizarTexto(nome);
-
-    for (const item of catalogoItens) {
-        if (normalizarTexto(item.nome) === nomeBuscado) {
-            return item;
-        }
-    }
-
-    return null;
-}
-
-function preencherCategoria() {
-    const itemEncontrado = buscarNoCatalogo(campoNome.value);
-
-    if (itemEncontrado === null) {
-        campoCategoria.value = "outros";
-        campoCategoria.disabled = false;
-        return;
-    }
-
-    campoCategoria.value = itemEncontrado.categoria;
-    campoCategoria.disabled = true;
-}
-
-campoNome.addEventListener("input", preencherCategoria);
-
-async function lerInventario() {
-    mensagemItem.classList.remove("sucesso");
-    const arquivo = campoImportar.files[0];
-
-    if (arquivo === undefined) {
-        return;
-    }
-
+function executar(acao) {
     try {
-        const texto = await arquivo.text();
-        const itens = JSON.parse(texto);
-
-        if (Array.isArray(itens) === false) {
-            throw new Error("O arquivo precisa conter uma lista de itens.");
-        }
-        const idsEncontrados = [];
-        for (const item of itens) {
-            if (item === null || typeof item !== "object") {
-                throw new Error("Existe um item inválido no arquivo.");
-            }
-
-            if (typeof item.nome !== "string" || item.nome.trim() === "") {
-                throw new Error("Existe um item sem nome válido.");
-            }
-
-            if (quantidadeValida(item.quantidade) === false) {
-                throw new Error("Existe uma quantidade inválida.");
-            }
-            if (
-            item.categoria !== undefined &&
-            categoriaValida(item.categoria) === false
-          ) {
-            throw new Error("Existe uma categoria inválida.");
-            }
-            if (item.catalogoId !== undefined && item.catalogoId !== null) {
-    if (
-        typeof item.catalogoId !== "string" ||
-        item.catalogoId.trim() === ""
-    ) {
-        throw new Error("Existe um identificador de catálogo inválido.");
-    }
-if (idsEncontrados.includes(item.catalogoId)) {
-    throw new Error(
-        `Identificador repetido no arquivo: ${item.catalogoId}.`
-    );
-}
-
-idsEncontrados.push(item.catalogoId);
-    const itemDoCatalogo = buscarNoCatalogoPorId(item.catalogoId);
-
-    if (itemDoCatalogo === null) {
-        throw new Error(
-            `Item não encontrado no catálogo: ${item.catalogoId}.`
-        );
-    }
-}
-}
-        const confirmou = window.confirm(
-            "Este arquivo tem " + itens.length +
-            " registros e substituirá todo o inventário atual. Deseja continuar?"
-        );
-
-        if (confirmou === false) {
-            mensagemItem.textContent = "Importação cancelada.";
-            return;
-        }
-
-        inventario.length = 0;
-        listaItens.textContent = "";
-
-        for (const item of itens) {
-            registrarItem({
-    catalogoId: item.catalogoId,
-    nome: item.nome.trim(),
-    quantidade: item.quantidade,
-    categoria: item.categoria
-    });
-}
-
-        renderizarInventario();
-        salvarInventario();
-        mostrarSucesso(
-            "Inventário importado com sucesso! Registros: " + itens.length
-        );
+        acao();
+        return true;
     } catch (erro) {
-        mostrarErro("Não foi possível importar: " + erro.message);
-    } finally {
-        campoImportar.value = "";
+        mostrarMensagem(erro.message, "erro");
+        return false;
     }
 }
 
-campoImportar.addEventListener("change", lerInventario);
-
-function limparFiltros() {
-    campoBusca.value = "";
-    filtroCategoria.value = "todas";
-
-    filtrarItens();
-    campoBusca.focus();
+function mensagemAdicao(item) {
+    const complemento = combinaFiltros(item) ? "" : " O item está oculto pelos filtros atuais. Use Limpar filtros para vê-lo.";
+    return `Item adicionado: ${item.nome}.${complemento}`;
 }
 
-botaoLimparFiltros.addEventListener("click", limparFiltros);
-
-function carregarSugestoes() {
-    sugestoesItens.textContent = "";
-
-    for (const item of catalogoItens) {
-        const opcao = document.createElement("option");
-        opcao.value = item.nome;
-
-        sugestoesItens.appendChild(opcao);
-    }
-}
-
-function exportarInventario() {
-    const itens = obterItens();
-    const dados = JSON.stringify(itens, null, 2);
-
-    const arquivo = new Blob([dados], {
-        type: "application/json"
-    });
-
-    const endereco = URL.createObjectURL(arquivo);
-    const link = document.createElement("a");
-
-    link.href = endereco;
-    const agora = new Date();
-
-const ano = agora.getFullYear();
-const mes = String(agora.getMonth() + 1).padStart(2, "0");
-const dia = String(agora.getDate()).padStart(2, "0");
-
-const hora = String(agora.getHours()).padStart(2, "0");
-const minuto = String(agora.getMinutes()).padStart(2, "0");
-const segundo = String(agora.getSeconds()).padStart(2, "0");
-
-link.download =
-    `terraria-lulu-inventario-${ano}-${mes}-${dia}_${hora}-${minuto}-${segundo}.json`;
-
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    setTimeout(function () {
-        URL.revokeObjectURL(endereco);
-    }, 1000);
-}
-
-botaoExportar.addEventListener("click", exportarInventario);
-
-function salvarInventario() {
-    const itens = obterItens();
-    const dados = JSON.stringify(itens);
-
-    localStorage.setItem("terraria-lulu-inventario", dados);
-}
-
-function ordenarItens() {
-    const ordem = campoOrdem.value;
-    
-    inventario.sort(function (primeiro, segundo) {
-        if (ordem === "menor-quantidade") {
-            return primeiro.quantidade - segundo.quantidade;
-        }
-
-        if (ordem === "quantidade") {
-            return segundo.quantidade - primeiro.quantidade;
-        }
-
-        if (ordem === "za") {
-            return segundo.nome.localeCompare(primeiro.nome, "pt-BR");
-        }
-
-        return primeiro.nome.localeCompare(segundo.nome, "pt-BR");
-    });
-
-    renderizarInventario();
-
-    salvarInventario();
-    localStorage.setItem("terraria-lulu-ordem", ordem);
-}
-
-botaoOrdenar.addEventListener("click", ordenarItens);
-
-function carregarInventario() {
-    const dados = localStorage.getItem("terraria-lulu-inventario");
-
-    if (dados === null) {
-        return;
-    }
-
-    const itens = JSON.parse(dados);
-
-    inventario.length = 0;
-
-    for (const item of itens) {
-        if (typeof item === "string") {
-            const itemConvertido = {
-                catalogoId: null,
-                nome: item,
-                quantidade: 1,
-                categoria: "outros"
-            };
-
-            registrarItem(itemConvertido);
-        } else {
-            registrarItem(item);
-        }
-    }
-
-    renderizarInventario();
-}
-
-function carregarOrdem() {
-    const ordemSalva = localStorage.getItem("terraria-lulu-ordem");
-
-    if (
-        ordemSalva === "az" ||
-        ordemSalva === "za" ||
-        ordemSalva === "quantidade" ||
-        ordemSalva === "menor-quantidade"
-    ) {
-        campoOrdem.value = ordemSalva;
-    }
-}
-
-function renderizarInventario() {
-    listaItens.textContent = "";
-
-    for (const item of inventario) {
-        criarItem(item);
-    }
-
-    atualizarTotal();
-    filtrarItens();
-}
-
-function criarItem(item) {
-    const novoItem = document.createElement("li");
-    novoItem.dadosItem = item;
-    novoItem.dataset.catalogoId = item.catalogoId || "";
-    const vinculadoAoCatalogo = novoItem.dataset.catalogoId !== "";
-
-    const textoItem = document.createElement("span");
-    textoItem.textContent = item.nome;
-    const textoCategoria = document.createElement("select");
-    textoCategoria.className = "categoria-exibida";
-    textoCategoria.setAttribute("aria-label", "Categoria de " + item.nome);
-
-    for (const opcao of campoCategoria.options) {
-    const novaOpcao = document.createElement("option");
-    novaOpcao.value = opcao.value;
-    novaOpcao.textContent = opcao.textContent;
-
-    textoCategoria.appendChild(novaOpcao);
-}
-
-    let categoria = item.categoria;
-
-    if (categoria === undefined) {
-    categoria = "outros";
-    }
-
-    textoCategoria.value = categoria;
-    textoCategoria.disabled = vinculadoAoCatalogo;
-    novoItem.dataset.categoria = categoria;
-
-function atualizarCategoria() {
-    const novaCategoria = textoCategoria.value;
-
-    if (categoriaValida(novaCategoria) === false) {
-        mostrarErro("Escolha uma categoria válida.");
-        textoCategoria.value = novoItem.dataset.categoria;
-        return;
-    }
-
-    item.categoria = novaCategoria;
-    novoItem.dataset.categoria = novaCategoria;
-
-    salvarInventario();
-    filtrarItens();
-
-    mostrarSucesso(
-        `Categoria de ${item.nome} atualizada para ${nomeDaCategoria(novaCategoria)}.`
-    );
-}
-
-textoCategoria.addEventListener("change", atualizarCategoria);
-
-    const textoQuantidade = document.createElement("input");
-    textoQuantidade.type = "number";
-    textoQuantidade.min = "1";
-    textoQuantidade.step = "1";
-    textoQuantidade.className = "quantidade-exibida";
-    textoQuantidade.setAttribute(
-        "aria-label",
-        "Quantidade de " + item.nome
-    );
-    textoQuantidade.value = item.quantidade;
-
-    function atualizarQuantidade() {
-        mensagemItem.classList.remove("sucesso");
-        const quantidade = Number(textoQuantidade.value);
-
-        if (quantidadeValida(quantidade) === false) {
-            mostrarErro("Digite uma quantidade inteira maior que zero.");
-
-            textoQuantidade.value = item.quantidade;
-            return;
-        }
-
-        mensagemItem.textContent = "";
-
-        item.quantidade = quantidade;
-
-        atualizarTotal();
-        filtrarItens();
-        salvarInventario();
-        avisarQuantidade(item.nome, quantidade);
-    }
-
-    textoQuantidade.addEventListener("change", atualizarQuantidade);
-    function confirmarQuantidade(evento) {
-    if (evento.key !== "Enter") {
-        return;
-    }
-
+el["formulario-item"].addEventListener("submit", (evento) => {
     evento.preventDefault();
+    executar(() => {
+        verificarDisponibilidade();
+        const novosItens = adicionarItem(itens, {
+            nome: el["nome-item"].value,
+            quantidade: Number(el["quantidade-item"].value),
+            categoria: el["categoria-item"].value,
+        });
+        const adicionado = novosItens.at(-1);
+        aplicarAlteracao(novosItens);
+        limparCadastro();
+        el["nome-item"].focus();
+        mostrarMensagem(mensagemAdicao(adicionado));
+    });
+});
 
-    const quantidade = Number(textoQuantidade.value);
+el["nome-item"].addEventListener("input", preencherCategoria);
 
-    if (quantidadeValida(quantidade) === false) {
-        mostrarErro("Digite uma quantidade inteira maior que zero.");
-        textoQuantidade.value = item.quantidade;
-        textoQuantidade.focus();
-        textoQuantidade.select();
-        return;
-    }
-
-    textoQuantidade.blur();
-    campoNome.focus();
+for (const id of ["buscar-item", "filtrar-categoria"]) {
+    el[id].addEventListener(id === "buscar-item" ? "input" : "change", atualizarTela);
 }
 
-textoQuantidade.addEventListener("keydown", confirmarQuantidade);
-    const botaoAumentar = document.createElement("button");
-    botaoAumentar.type = "button";
-botaoAumentar.textContent = "+1";
-botaoAumentar.className = "botao-quantidade";
-botaoAumentar.setAttribute(
-    "aria-label",
-    "Adicionar uma unidade de " + item.nome
-);
+el["buscar-item"].addEventListener("keydown", (evento) => {
+    if (evento.key !== "Escape") return;
+    evento.preventDefault();
+    el["buscar-item"].value = "";
+    atualizarTela();
+});
 
-function aumentarQuantidade() {
-    const quantidadeAtual = Number(textoQuantidade.value);
+el["limpar-filtros"].addEventListener("click", () => {
+    el["buscar-item"].value = "";
+    el["filtrar-categoria"].value = "todas";
+    atualizarTela();
+    el["buscar-item"].focus();
+});
 
-    if (quantidadeValida(quantidadeAtual) === false) {
-        mostrarErro("Digite uma quantidade inteira maior que zero.");
-        textoQuantidade.focus();
-        return;
-    }
+el["ordem-itens"].addEventListener("change", () => {
+    executar(() => {
+        const novaOrdem = el["ordem-itens"].value;
+        salvarOrdem(novaOrdem);
+        ordem = novaOrdem;
+        atualizarTela();
+    });
+    el["ordem-itens"].value = ordem;
+});
 
-    textoQuantidade.value = quantidadeAtual + 1;
-    atualizarQuantidade();
+function removerRegistro(indice) {
+    const nome = itens[indice].nome;
+    aplicarAlteracao(removerItem(itens, indice), { guardarRemocao: true });
+    el["nome-item"].focus();
+    mostrarMensagem(`Item removido: ${nome}. Você pode desfazer esta remoção.`);
 }
 
-botaoAumentar.addEventListener("click", aumentarQuantidade);
+el["remover-ultimo"].addEventListener("click", () => executar(() => {
+    verificarDisponibilidade();
+    if (temFiltros()) throw new Error("Limpe os filtros antes de remover o último cadastrado.");
+    if (itens.length === 0) throw new Error("Não há itens para remover.");
+    removerRegistro(itens.length - 1);
+}));
 
-const botaoDiminuir = document.createElement("button");
-botaoDiminuir.type = "button";
-botaoDiminuir.textContent = "−1";
-botaoDiminuir.className = "botao-quantidade botao-diminuir";
-botaoDiminuir.setAttribute(
-    "aria-label",
-    "Retirar uma unidade de " + item.nome
-);
+el["desfazer-remocao"].addEventListener("click", () => executar(() => {
+    if (ultimaRemocao === null) return;
+    aplicarAlteracao(ultimaRemocao);
+    el["nome-item"].focus();
+    mostrarMensagem("Remoção desfeita. O inventário anterior foi restaurado.");
+}));
 
-function diminuirQuantidade() {
-    const quantidadeAtual = Number(textoQuantidade.value);
-
-    if (quantidadeValida(quantidadeAtual) === false) {
-        mostrarErro("Digite uma quantidade inteira maior que zero.");
-        textoQuantidade.focus();
-        return;
-    }
-
-    if (quantidadeAtual <= 1) {
-        mostrarErro("Para excluir este item, use o botão Remover.");
-        return;
-    }
-
-    textoQuantidade.value = quantidadeAtual - 1;
-    atualizarQuantidade();
+function restaurarFoco(indice, controle) {
+    const campo = el["lista-itens"].querySelector(`[data-indice="${indice}"][data-controle="${controle}"]`);
+    if (campo && !campo.closest("li").hidden) campo.focus();
 }
 
-botaoDiminuir.addEventListener("click", diminuirQuantidade);
-
-    const botaoRemover = document.createElement("button");
-    botaoRemover.type = "button";
-    botaoRemover.textContent = "Remover";
-
-    botaoRemover.setAttribute(
-        "aria-label",
-        "Remover " + item.nome
-    );
-
-    function removerEsteItem() {
-    const nome = item.nome;
-
-    removerDoInventario(item);
-    renderizarInventario();
-    salvarInventario();
-
-    campoNome.focus();
-    mostrarSucesso(`Item removido: ${nome}`);
+function atualizarQuantidade(indice, quantidade) {
+    const nome = itens[indice].nome;
+    aplicarAlteracao(alterarQuantidade(itens, indice, quantidade));
+    mostrarMensagem(`Quantidade de ${nome} atualizada para ${quantidade}.`);
 }
 
-    botaoRemover.addEventListener("click", removerEsteItem);
+el["lista-itens"].addEventListener("change", (evento) => {
+    const campo = evento.target;
+    if (!campo.dataset.controle) return;
+    const indice = Number(campo.dataset.indice);
+    const controle = campo.dataset.controle;
+    const tinhaFoco = document.activeElement === campo;
+    const sucesso = executar(() => {
+        if (controle === "quantidade") atualizarQuantidade(indice, Number(campo.value));
+        if (controle === "categoria") {
+            const nome = itens[indice].nome;
+            aplicarAlteracao(alterarCategoria(itens, indice, campo.value));
+            mostrarMensagem(`Categoria de ${nome} atualizada.`);
+        }
+    });
+    if (!sucesso) campo.value = controle === "quantidade" ? itens[indice].quantidade : itens[indice].categoria;
+    if (tinhaFoco) restaurarFoco(indice, controle);
+});
 
-    novoItem.appendChild(textoItem);
-    novoItem.appendChild(textoCategoria);
-    novoItem.appendChild(botaoDiminuir);
-    novoItem.appendChild(textoQuantidade);
-    novoItem.appendChild(botaoAumentar);
-    novoItem.appendChild(botaoRemover);
+// Mantém o campo em edição até o clique; evita perder o clique ao recriar a linha.
+el["lista-itens"].addEventListener("pointerdown", (evento) => {
+    if (evento.target.closest("button[data-acao]")) evento.preventDefault();
+});
 
-    const botaoRenomear = document.createElement("button");
-    botaoRenomear.type = "button";
-    botaoRenomear.textContent = "Renomear";
-    botaoRenomear.disabled = vinculadoAoCatalogo;
-    botaoRenomear.setAttribute("aria-label", "Renomear " + item.nome);
+el["lista-itens"].addEventListener("keydown", (evento) => {
+    if (evento.key !== "Enter" || evento.target.dataset.controle !== "quantidade") return;
+    evento.preventDefault();
+    const campo = evento.target;
+    const indice = Number(campo.dataset.indice);
+    const sucesso = executar(() => atualizarQuantidade(indice, Number(campo.value)));
+    if (sucesso) el["nome-item"].focus();
+    else {
+        campo.value = itens[indice].quantidade;
+        campo.focus();
+        campo.select();
+    }
+});
 
-function renomearItem() {
-        mensagemItem.classList.remove("sucesso");
-        const resposta = window.prompt("Novo nome do item:", item.nome);
+el["lista-itens"].addEventListener("click", async (evento) => {
+    const botao = evento.target.closest("button[data-acao]");
+    if (!botao || botao.disabled) return;
+    const indice = Number(botao.dataset.indice);
+    const acao = botao.dataset.acao;
+    if (acao === "renomear") {
+        const resposta = await pedirNovoNome(itens[indice].nome);
+        if (resposta !== null) executar(() => {
+            aplicarAlteracao(renomearItem(itens, indice, resposta));
+            mostrarMensagem(`Item renomeado: ${itens[indice].nome}.`);
+            el["nome-item"].focus();
+        });
+        return;
+    }
+    executar(() => {
+        verificarDisponibilidade();
+        if (acao === "remover") removerRegistro(indice);
+        if (acao === "aumentar" || acao === "diminuir") {
+            const campo = botao.closest("li").querySelector('[data-controle="quantidade"]');
+            const atual = Number(campo.value);
+            if (!quantidadeValida(atual)) throw new Error(ERRO_QUANTIDADE);
+            if (acao === "diminuir" && atual === 1) {
+                throw new Error("Para excluir este item, use o botão Remover.");
+            }
+            atualizarQuantidade(indice, atual + (acao === "aumentar" ? 1 : -1));
+            restaurarFoco(indice, "quantidade");
+        }
+    });
+});
 
-        if (resposta === null) {
+el["exportar-itens"].addEventListener("click", () => executar(() => {
+    verificarDisponibilidade();
+    exportarInventario(itens);
+    mostrarMensagem("Arquivo de exportação gerado.");
+}));
+
+el["importar-itens"].addEventListener("change", async () => {
+    const arquivo = el["importar-itens"].files[0];
+    if (!arquivo) return;
+    el["importar-itens"].disabled = true;
+    try {
+        const novosItens = await lerArquivoInventario(arquivo);
+        const confirmou = await confirmarSubstituicao(`O arquivo contém ${novosItens.length} registros e substituirá todo o inventário atual. Deseja continuar?`);
+        if (!confirmou) {
+            mostrarMensagem("Importação cancelada. O inventário atual foi mantido.", "aviso");
             return;
         }
-
-        const novoNome = resposta.trim();
-
-        if (novoNome === "") {
-            mostrarErro("Digite um nome válido para o item.");
-            return;
-        }
-
-        item.nome = novoNome;
-        textoItem.textContent = novoNome;
-        botaoDiminuir.setAttribute(
-        "aria-label",
-        "Retirar uma unidade de " + novoNome
-);
-        botaoAumentar.setAttribute(
-        "aria-label",
-        "Adicionar uma unidade de " + novoNome
-        );
-        textoCategoria.setAttribute("aria-label", "Categoria de " + novoNome);
-
-        textoQuantidade.setAttribute("aria-label", "Quantidade de " + novoNome);
-        botaoRemover.setAttribute("aria-label", "Remover " + novoNome);
-        botaoRenomear.setAttribute("aria-label", "Renomear " + novoNome);
-
-        mensagemItem.textContent = "";
-
-        salvarInventario();
-        filtrarItens();
-        mostrarSucesso(`Item renomeado: ${novoNome}`);
+        aplicarAlteracao(novosItens, { permitirRecuperacao: true });
+        mostrarMensagem(`Inventário importado com sucesso. Registros: ${novosItens.length}.`);
+    } catch (erro) {
+        mostrarMensagem(`Importação não aplicada: ${erro.message}`, "erro");
+    } finally {
+        el["importar-itens"].value = "";
+        el["importar-itens"].disabled = false;
     }
+});
 
-    botaoRenomear.addEventListener("click", renomearItem);
-    novoItem.insertBefore(botaoRenomear, botaoRemover);
-    
-    listaItens.appendChild(novoItem);
-}
+el["baixar-dados-salvos"].addEventListener("click", () => executar(exportarDadosSalvos));
 
-function normalizarTexto(texto) {
-    return texto
-        .trim()
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
-}
-
-function carregarCategorias() {
-    campoCategoria.textContent = "";
-    filtroCategoria.textContent = "";
-
-    const opcaoTodas = document.createElement("option");
-    opcaoTodas.value = "todas";
-    opcaoTodas.textContent = "Todas";
-
-    filtroCategoria.appendChild(opcaoTodas);
-    
-    for (const categoria of Object.keys(categoriasItens)) {
-        const opcaoCadastro = document.createElement("option");
-
-        opcaoCadastro.value = categoria;
-        opcaoCadastro.textContent = nomeDaCategoria(categoria);
-
-        campoCategoria.appendChild(opcaoCadastro);
-
-        const opcaoFiltro = document.createElement("option");
-
-        opcaoFiltro.value = categoria;
-        opcaoFiltro.textContent = nomeDaCategoria(categoria);
-
-        filtroCategoria.appendChild(opcaoFiltro);
+el["iniciar-novo"].addEventListener("click", async () => {
+    if (await confirmarSubstituicao("Isso substituirá os dados salvos por um inventário vazio. Baixe uma cópia para recuperação antes de continuar. Deseja substituir?")) {
+        executar(() => {
+            aplicarAlteracao([], { permitirRecuperacao: true });
+            mostrarMensagem("Um inventário vazio foi salvo.");
+        });
     }
-}
+});
 
-function filtrarItens() {
-    const busca = normalizarTexto(campoBusca.value);
-    const categoria = filtroCategoria.value;
-    let encontrados = 0;
-    let unidadesEncontradas = 0;
-
-    botaoRemoverUltimo.disabled =
-        busca !== "" || categoria !== "todas";
-
-    for (const linha of listaItens.children) {
-    const item = linha.dadosItem;
-    const nome = normalizarTexto(item.nome);
-
-    const combinaNome = nome.includes(busca);
-
-    const combinaCategoria =
-        categoria === "todas" ||
-        item.categoria === categoria;
-
-    if (combinaNome && combinaCategoria) {
-        linha.style.display = "";
-        encontrados = encontrados + 1;
-        unidadesEncontradas = unidadesEncontradas + item.quantidade;
-    } else {
-        linha.style.display = "none";
+function iniciar() {
+    try {
+        validarCatalogo();
+    } catch (erro) {
+        mostrarMensagem(`Catálogo inválido: ${erro.message} Corrija catalogo.js e atualize a página.`, "erro");
+        for (const controle of document.querySelectorAll("input, select, button")) controle.disabled = true;
+        return;
     }
-}
-
-    if (inventario.length === 0) {
-        mensagemBusca.textContent = "Seu inventário está vazio.";
-    } else if (encontrados === 0) {
-        mensagemBusca.textContent = "Nenhum item encontrado.";
-    } else if (busca !== "" || categoria !== "todas") {
-        mensagemBusca.textContent =
-            `Registros encontrados: ${encontrados} | Unidades: ${unidadesEncontradas}`;
-    } else {
-        mensagemBusca.textContent = "";
+    prepararCampos();
+    try {
+        ordem = carregarOrdem();
+    } catch {
+        mostrarMensagem("A preferência de ordenação não pôde ser lida. Usando a ordem de cadastro.", "aviso");
     }
-}
-
-botaoAdicionar.addEventListener("click", adicionarItem);
-campoNome.addEventListener("keydown", verificarTecla);
-campoQuantidade.addEventListener("keydown", verificarTecla);
-botaoRemoverUltimo.addEventListener("click", removerUltimoItem);
-function limparBusca(evento) {
-    if (evento.key === "Escape") {
-        campoBusca.value = "";
-        filtrarItens();
+    el["ordem-itens"].value = ordem;
+    try {
+        const resultado = carregarInventario();
+        itens = resultado.itens;
+        if (resultado.avisos.length) mostrarMensagem(resultado.avisos.join(" "), "aviso");
+    } catch (erro) {
+        bloqueado = true;
+        mostrarMensagem(`Não foi possível carregar: ${erro.message} Os dados salvos foram mantidos.`, "erro");
     }
+    atualizarTela();
 }
-campoBusca.addEventListener("input", filtrarItens);
-filtroCategoria.addEventListener("change", filtrarItens);
-campoBusca.addEventListener("keydown", limparBusca);
 
-validarCatalogo();
-carregarCategorias();
-carregarSugestoes();
-carregarInventario();
-carregarOrdem();
-atualizarTotal();
-filtrarItens();
+iniciar();
