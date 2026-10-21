@@ -353,47 +353,36 @@ function salvarInventario() {
 }
 
 function ordenarItens() {
-    const itens = Array.from(listaItens.children);
     const ordem = campoOrdem.value;
+    const linhas = Array.from(listaItens.children);
 
-    itens.sort(function (primeiro, segundo) {
-
-        if (ordem === "quantidade" || ordem === "menor-quantidade") {
-            const quantidadePrimeiro = Number(
-                primeiro.querySelector(".quantidade-exibida").value
-            );
-
-            const quantidadeSegundo = Number(
-                segundo.querySelector(".quantidade-exibida").value
-            );
-
-            if (ordem === "menor-quantidade") {
-                return quantidadePrimeiro - quantidadeSegundo;
-            }
-
-            return quantidadeSegundo - quantidadePrimeiro;
+    inventario.sort(function (primeiro, segundo) {
+        if (ordem === "menor-quantidade") {
+            return primeiro.quantidade - segundo.quantidade;
         }
-        const nomePrimeiro = primeiro.querySelector("span").textContent;
-        const nomeSegundo = segundo.querySelector("span").textContent;
+
+        if (ordem === "quantidade") {
+            return segundo.quantidade - primeiro.quantidade;
+        }
 
         if (ordem === "za") {
-            return nomeSegundo.localeCompare(nomePrimeiro, "pt-BR");
+            return segundo.nome.localeCompare(primeiro.nome, "pt-BR");
         }
 
-        return nomePrimeiro.localeCompare(nomeSegundo, "pt-BR");
+        return primeiro.nome.localeCompare(segundo.nome, "pt-BR");
     });
 
-    for (const item of itens) {
-    listaItens.appendChild(item);
-}
+    for (const item of inventario) {
+        const linha = linhas.find(function (linhaExistente) {
+            return linhaExistente.dadosItem === item;
+        });
 
-inventario.length = 0;
+        if (linha !== undefined) {
+            listaItens.appendChild(linha);
+        }
+    }
 
-for (const linha of listaItens.children) {
-    inventario.push(linha.dadosItem);
-}
-
-salvarInventario();
+    salvarInventario();
     localStorage.setItem("terraria-lulu-ordem", ordem);
 }
 
