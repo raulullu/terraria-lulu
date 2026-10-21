@@ -91,8 +91,7 @@ if (item.catalogoId !== null) {
     }
 }
     registrarItem(item);
-    filtrarItens();
-    atualizarTotal();
+    renderizarInventario();
     salvarInventario();
 
     campoNome.value = "";
@@ -270,9 +269,8 @@ idsEncontrados.push(item.catalogoId);
     });
 }
 
+        renderizarInventario();
         salvarInventario();
-        atualizarTotal();
-        filtrarItens();
         mostrarSucesso(
             "Inventário importado com sucesso! Registros: " + itens.length
         );
@@ -386,13 +384,14 @@ function carregarInventario() {
     const itens = JSON.parse(dados);
 
     inventario.length = 0;
-    listaItens.textContent = "";
 
     for (const item of itens) {
         if (typeof item === "string") {
             const itemConvertido = {
+                catalogoId: null,
                 nome: item,
-                quantidade: 1
+                quantidade: 1,
+                categoria: "outros"
             };
 
             registrarItem(itemConvertido);
@@ -400,6 +399,8 @@ function carregarInventario() {
             registrarItem(item);
         }
     }
+
+    renderizarInventario();
 }
 
 function carregarOrdem() {
@@ -426,7 +427,6 @@ function buscarNoCatalogoPorId(id) {
 }
 
 function registrarItem(item) {
-    criarItem(item);
     inventario.push(item);
 }
 
