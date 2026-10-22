@@ -8,7 +8,7 @@ Aplicativo para organizar meu inventário no Terraria. Projeto de estudo de HTML
 
 - Adicionar pelo botão ou por Enter, com validação de nome e quantidade.
 - Editar quantidades pelo campo ou pelos botões +1 e −1, mantendo o mínimo de uma unidade.
-- Renomear e alterar a categoria dos registros manuais.
+- Renomear e alterar a categoria dos registros manuais. Um registro manual não pode ser renomeado para um nome do catálogo.
 - Sugerir nomes do catálogo e preencher nome e categoria dos itens vinculados.
 - Usar identificadores estáveis e impedir registros vinculados com ID repetido.
 - Validar IDs, nomes equivalentes e categorias do catálogo ao iniciar.
@@ -29,6 +29,7 @@ Aplicativo para organizar meu inventário no Terraria. Projeto de estudo de HTML
 
 - Salvar inventário e preferência de ordenação no navegador.
 - Validar registros ao carregar e ao importar, usando as mesmas regras.
+- Mostrar mensagens em português quando os dados salvos ou o arquivo importado não são um JSON válido.
 - Aceitar no carregamento os formatos antigos: arrays de nomes e objetos sem categoria ou identificador.
 - Carregar referências removidas do catálogo como itens manuais, com aviso; arquivos importados com IDs desconhecidos continuam sendo recusados.
 - Gravar antes de trocar o inventário em uso. Se a gravação falhar, a alteração não é aplicada.
@@ -40,6 +41,7 @@ Aplicativo para organizar meu inventário no Terraria. Projeto de estudo de HTML
 ### Interface e acessibilidade
 
 - Layout responsivo, controles com rótulos e foco visível ao navegar pelo teclado.
+- Manter o foco no botão +1 ou −1 usado, para repetir a ação pelo teclado, e preservar a semântica de lista em leitores de tela.
 - Mensagens identificadas por texto e cor; região de status preparada para anúncios repetidos.
 - Formulário de cadastro com envio por Enter.
 - Diálogos HTML para renomear e confirmar substituições.
@@ -66,6 +68,7 @@ O aplicativo usa módulos JavaScript. Abra pelo Live Server, não por duplo cliq
 | `script.js` | Estado da aplicação e ligação entre eventos, regras, armazenamento e interface. |
 | `utilidades.js` | Normalização de textos e cópia dos registros. |
 | `tests/` | Testes de regras, armazenamento e fluxos com DOM simulado. |
+| `docs/` | Checklist de conferência no navegador e roteiro de estudo. |
 
 As dependências são declaradas com `import` e `export`. Os dados seguem este formato:
 
@@ -80,7 +83,7 @@ As dependências são declaradas com `import` e `export`. Os dados seguem este f
 ]
 ```
 
-Itens manuais usam `"catalogoId": null`. Registros manuais podem ter nomes iguais, inclusive nomes do catálogo; apenas os IDs vinculados devem ser únicos. Renomear um item manual não o vincula automaticamente ao catálogo.
+Itens manuais usam `"catalogoId": null`. Registros manuais podem ter nomes iguais entre si; apenas os IDs vinculados devem ser únicos. Cadastrar um nome do catálogo vincula o item automaticamente, e renomear um registro manual para um nome do catálogo é recusado: remova o registro e cadastre pelo nome. Dados antigos ou importados que já tenham um registro manual com nome do catálogo continuam sendo aceitos.
 
 ## Armazenamento e recuperação
 
@@ -100,7 +103,7 @@ Com Node.js instalado, execute na pasta do projeto:
 npm test
 ```
 
-Os testes usam o executor integrado do Node.js e não exigem dependências. Há testes das regras, das falhas de armazenamento e dos fluxos da interface em um DOM simulado. A simulação não verifica aparência, comportamento nativo dos diálogos, validação nativa de formulários nem leitores de tela. Veja também o roteiro em `REVISAO.md` para conferir no navegador.
+Os testes usam o executor integrado do Node.js e não exigem dependências; `npm test` roda todos os arquivos `*.test.js` encontrados, inclusive `tests/logica-extra.test.js`. Há testes das regras, das falhas de armazenamento e dos fluxos da interface em um DOM simulado. A simulação não verifica aparência, comportamento nativo dos diálogos, validação nativa de formulários nem leitores de tela. Veja também o roteiro em `docs/checklist-manual.md` para conferir no navegador.
 
 ## Limitações e próximos passos
 

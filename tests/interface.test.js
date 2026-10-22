@@ -50,6 +50,24 @@ test("fluxos de interface com os módulos reais e DOM simulado", async (t) => {
         assert.deepEqual(originais.map((item) => item.nome), ["Zebra", "Areia", "Bambu"]);
     });
 
+    await t.test("ativações sucessivas de +1 e −1 mantêm o foco no botão usado", async () => {
+        const linha = el("lista-itens").children.find((item) => item.children[0].textContent === "Zebra");
+        linha.querySelector('button[data-acao="aumentar"]').focus();
+        for (let vez = 0; vez < 2; vez += 1) {
+            await emitir(el("lista-itens"), "click", { target: document.activeElement });
+            assert.equal(document.activeElement.dataset.acao, "aumentar");
+            assert.equal(document.activeElement.dataset.indice, 0);
+        }
+        assert.equal(lerSalvos()[0].quantidade, 3);
+        el("lista-itens").children.find((item) => item.children[0].textContent === "Zebra")
+            .querySelector('button[data-acao="diminuir"]').focus();
+        for (let vez = 0; vez < 2; vez += 1) {
+            await emitir(el("lista-itens"), "click", { target: document.activeElement });
+            assert.equal(document.activeElement.dataset.acao, "diminuir");
+        }
+        assert.equal(lerSalvos()[0].quantidade, 1);
+    });
+
     await t.test("remoção usa último cadastrado e pode ser desfeita", async () => {
         await emitir(el("remover-ultimo"), "click");
         assert.deepEqual(lerSalvos().map((item) => item.nome), ["Zebra", "Areia"]);
@@ -123,17 +141,17 @@ test("fluxos de interface com os módulos reais e DOM simulado", async (t) => {
         assert.equal(lerSalvos()[0].quantidade, 46);
     });
 
-    await t.test("renomeação usa diálogo, atualiza rótulos e mantém catálogo separado", async () => {
+    await t.test("renomeação usa diálogo e atualiza rótulos dos controles", async () => {
         await importar([{ nome: "Manual", quantidade: 1 }]);
         const linha = el("lista-itens").children[0];
         const promessa = emitir(el("lista-itens"), "click", { target: linha.querySelector('button[data-acao="renomear"]') });
         await new Promise((resolve) => setTimeout(resolve, 0));
-        el("novo-nome").value = "Pedra";
+        el("novo-nome").value = "Pedra manual";
         await el("dialogo-renomear").close("confirmar");
         await promessa;
-        assert.equal(lerSalvos()[0].nome, "Pedra");
+        assert.equal(lerSalvos()[0].nome, "Pedra manual");
         assert.equal(lerSalvos()[0].catalogoId, null);
-        assert.equal(el("lista-itens").children[0].querySelector('button[data-acao="remover"]').attributes["aria-label"], "Remover Pedra");
+        assert.equal(el("lista-itens").children[0].querySelector('button[data-acao="remover"]').attributes["aria-label"], "Remover Pedra manual");
     });
 
     await t.test("busca ignora acentos e Esc mantém o filtro de categoria", async () => {
@@ -169,5 +187,17 @@ test("fluxos de interface com os módulos reais e DOM simulado", async (t) => {
         assert.equal(el("desfazer-remocao").hidden, false);
         await adicionar("Bambu");
         assert.equal(el("desfazer-remocao").hidden, true);
+    });
+
+    await t.test("resultados visuais são imediatos e anúncios aguardam a pausa na busca", async () => {
+        const anterior = el("anuncio-busca").textContent;
+        el("buscar-item").value = "Bambu";
+        await emitir(el("buscar-item"), "input");
+        el("buscar-item").value = "nome inexistente";
+        await emitir(el("buscar-item"), "input");
+        assert.equal(el("mensagem-busca").textContent, "Nenhum item encontrado.");
+        assert.equal(el("anuncio-busca").textContent, anterior);
+        await new Promise((resolve) => setTimeout(resolve, 400));
+        assert.equal(el("anuncio-busca").textContent, "Nenhum item encontrado.");
     });
 });

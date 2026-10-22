@@ -158,6 +158,15 @@ function criarItem(item, indice) {
     return linha;
 }
 
+// Desenha a lista a partir dos dados. Em vez de apagar e recriar tudo, reaproveita as linhas:
+//   1. guarda as linhas atuais num Map, usando o índice do registro nos dados como chave;
+//   2. percorre os itens já na ordem de exibição; se a linha antiga ainda representa o mesmo
+//      item (mesmo nome e mesmo vínculo), só atualiza quantidade e categoria; senão cria outra;
+//   3. posiciona cada linha com insertBefore e remove as que sobraram;
+//   4. devolve o foco ao controle que o tinha, porque mover elementos do DOM pode fazê-lo perdê-lo;
+//   5. por fim atualiza totais, mensagens e o estado dos botões.
+// O motivo de reaproveitar é manter o foco do teclado durante edições. Se você achar essa
+// função difícil, é normal: ela é a mais complexa do projeto.
 export function renderizarInventario(itens, ordem, { bloqueado = false, podeDesfazer = false } = {}) {
     const lista = elementos["lista-itens"];
     const focoAnterior = document.activeElement;

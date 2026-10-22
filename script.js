@@ -190,7 +190,8 @@ el["lista-itens"].addEventListener("click", async (evento) => {
                 throw new Error("Para excluir este item, use o botão Remover.");
             }
             atualizarQuantidade(indice, atual + (acao === "aumentar" ? 1 : -1));
-            restaurarFoco(indice, "quantidade");
+            // O foco não é movido para o campo: renderizarInventario já o preserva no botão usado.
+            // Assim, quem navega por Tab pode apertar Enter em +1 várias vezes seguidas.
         }
     });
 });

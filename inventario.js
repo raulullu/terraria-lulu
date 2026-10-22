@@ -121,6 +121,12 @@ export function renomearItem(itens, indice, novoNome) {
         throw new Error("O nome dos itens vinculados é definido pelo catálogo.");
     }
     const nome = validarNome(novoNome);
+    // Mesma regra do cadastro: nomes do catálogo pertencem a itens vinculados.
+    // Sem este bloqueio, dava para criar um registro manual "Pedra" ao lado da Pedra do catálogo.
+    const referencia = buscarNoCatalogo(nome);
+    if (referencia) {
+        throw new Error(`${referencia.nome} é um item do catálogo. Remova este registro e cadastre pelo nome para vinculá-lo.`);
+    }
     return prepararInventario(itens.map((registro, posicao) => (
         posicao === indice ? { ...registro, nome } : registro
     ))).itens;

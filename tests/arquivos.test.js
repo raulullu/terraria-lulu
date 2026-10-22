@@ -4,12 +4,19 @@ import { lerArquivoInventario, exportarInventario } from "../armazenamento.js";
 
 test("leitura de arquivo valida JSON, identificadores e campos antes da confirmação", async () => {
     const arquivo = (texto) => ({ text: async () => texto });
-    await assert.rejects(lerArquivoInventario(arquivo("{")));
+    await assert.rejects(lerArquivoInventario(arquivo("{")), /O arquivo não é um JSON válido/);
     await assert.rejects(lerArquivoInventario(arquivo('{"nome":"Pedra"}')));
     await assert.rejects(lerArquivoInventario(arquivo('[{"nome":"Antigo","catalogoId":"ausente","quantidade":1}]')));
     const itens = await lerArquivoInventario(arquivo('[{"nome":"Madeira","catalogoId":"madeira","quantidade":44}]'));
     assert.equal(itens[0].categoria, "materiais");
     assert.equal(itens[0].quantidade, 44);
+});
+
+test("falha de leitura de arquivo é apresentada em português", async () => {
+    await assert.rejects(
+        lerArquivoInventario({ text: async () => { throw Error("NotReadableError"); } }),
+        /Não foi possível ler o arquivo selecionado/,
+    );
 });
 
 test("exportação mantém todos os registros, gera data no nome e libera o endereço temporário", async () => {

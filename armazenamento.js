@@ -4,10 +4,19 @@ export const CHAVE_INVENTARIO = "terraria-lulu-inventario";
 export const CHAVE_ORDEM = "terraria-lulu-ordem";
 export const ORDENS = ["cadastro", "az", "za", "quantidade", "menor-quantidade"];
 
+// JSON.parse lança mensagens em inglês ("Unexpected token..."). Aqui elas viram texto claro para quem usa o app.
+function lerJson(texto, mensagem) {
+    try {
+        return JSON.parse(texto);
+    } catch {
+        throw new Error(mensagem);
+    }
+}
+
 export function carregarInventario() {
     const dados = localStorage.getItem(CHAVE_INVENTARIO);
     if (dados === null) return { itens: [], avisos: [] };
-    return prepararInventario(JSON.parse(dados), {
+    return prepararInventario(lerJson(dados, "O conteúdo salvo não é um JSON válido."), {
         aceitarLegado: true,
         recuperarOrfaos: true,
     });
@@ -37,7 +46,7 @@ export function salvarOrdem(ordem) {
 }
 
 export async function lerArquivoInventario(arquivo) {
-    return prepararInventario(JSON.parse(await arquivo.text())).itens;
+    return prepararInventario(lerJson(await arquivo.text(), "O arquivo não é um JSON válido.")).itens;
 }
 
 export function baixarArquivo(conteudo, nome, tipo) {
