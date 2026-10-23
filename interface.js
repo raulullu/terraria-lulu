@@ -3,7 +3,7 @@ import { calcularTotalUnidades } from "./inventario.js";
 import { normalizarTexto } from "./utilidades.js";
 
 export const elementos = Object.fromEntries([
-    "formulario-item", "nome-item", "quantidade-item", "categoria-item", "sugestoes-itens",
+    "formulario-item", "nome-item", "quantidade-item", "categoria-item", "sugestoes-itens", "lista-catalogo",
     "buscar-item", "filtrar-categoria", "ordem-itens", "limpar-filtros", "lista-itens",
     "total-itens", "mensagem-item", "mensagem-busca", "anuncio-busca", "adicionar-item", "remover-ultimo",
     "desfazer-remocao", "exportar-itens", "importar-itens", "recuperacao", "baixar-dados-salvos",
@@ -43,6 +43,31 @@ export function preencherOpcoesCategoria(seletor, incluirTodas = false) {
     if (incluirTodas) seletor.appendChild(criarOpcao("todas", "Todas"));
     for (const [valor, nome] of Object.entries(categoriasItens)) {
         seletor.appendChild(criarOpcao(valor, nome));
+    }
+}
+
+function carregarCatalogo(itens) {
+    const lista = elementos["lista-catalogo"];
+
+    lista.replaceChildren();
+
+    for (const itemDoCatalogo of catalogoItens) {
+        let quantidade = 0;
+
+        for (const itemDoInventario of itens) {
+            if (itemDoInventario.catalogoId === itemDoCatalogo.id) {
+                quantidade = itemDoInventario.quantidade;
+                break;
+            }
+        }
+
+        const linha = document.createElement("li");
+        const categoria = categoriasItens[itemDoCatalogo.categoria];
+
+        linha.textContent =
+            `${itemDoCatalogo.nome} — ${categoria} | No inventário: ${quantidade}`;
+
+        lista.appendChild(linha);
     }
 }
 
@@ -176,6 +201,8 @@ function criarItem(item, indice) {
 // O motivo de reaproveitar é manter o foco do teclado durante edições. Se você achar essa
 // função difícil, é normal: ela é a mais complexa do projeto.
 export function renderizarInventario(itens, ordem, { bloqueado = false, podeDesfazer = false } = {}) {
+    carregarCatalogo(itens);
+
     const lista = elementos["lista-itens"];
     const focoAnterior = document.activeElement;
     const anteriores = new Map([...lista.children].map((linha) => [Number(linha.dataset.indice), linha]));

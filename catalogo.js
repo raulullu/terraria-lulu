@@ -4,6 +4,7 @@ export const catalogoItens = [
     { id: "madeira", nome: "Madeira", categoria: "materiais" },
     { id: "pedra", nome: "Pedra", categoria: "materiais" },
     { id: "item-teste", nome: "Item de Teste", categoria: "outros" },
+    { id: "espelho-magico", nome: "Espelho Mágico", categoria: "acessorios"}
 ];
 
 export const categoriasItens = {

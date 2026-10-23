@@ -109,3 +109,18 @@ dialog .acoes { margin-top: 20px; }
     .item-inventario { gap: 12px; }
     #remover-ultimo, #desfazer-remocao { width: 100%; }
 }
+#lista-catalogo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 12px;
+    padding: 0;
+    list-style: none;
+}
+
+#lista-catalogo li {
+    padding: 14px;
+    background-color: var(--painel);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    overflow-wrap: anywhere;
+}
