@@ -64,9 +64,23 @@ function carregarCatalogo(itens) {
         const linha = document.createElement("li");
         const categoria = categoriasItens[itemDoCatalogo.categoria];
 
-        linha.textContent =
+        const texto = document.createElement("p");
+        texto.textContent =
             `${itemDoCatalogo.nome} — ${categoria} | No inventário: ${quantidade}`;
 
+        const botao = document.createElement("button");
+        botao.type = "button";
+        botao.className = "botao";
+        botao.dataset.catalogoId = itemDoCatalogo.id;
+        botao.textContent = quantidade > 0 ? "Já cadastrado" : "Selecionar";
+        botao.disabled = quantidade > 0;
+
+        botao.setAttribute(
+            "aria-label",
+            `Selecionar ${itemDoCatalogo.nome} para cadastro`
+        );
+
+        linha.append(texto, botao);
         lista.appendChild(linha);
     }
 }

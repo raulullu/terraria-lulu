@@ -1,4 +1,4 @@
-import { validarCatalogo } from "./catalogo.js";
+import {validarCatalogo, buscarNoCatalogoPorId} from "./catalogo.js";
 import { adicionarItem, alterarQuantidade, alterarCategoria, renomearItem, removerItem, quantidadeValida, ERRO_QUANTIDADE } from "./inventario.js";
 import { copiarItens } from "./utilidades.js";
 import {
@@ -232,6 +232,28 @@ el["iniciar-novo"].addEventListener("click", async () => {
             mostrarMensagem("Um inventário vazio foi salvo.");
         });
     }
+});
+
+el["lista-catalogo"].addEventListener("click", (evento) => {
+    const botao = evento.target.closest("button[data-catalogo-id]");
+
+    if (!botao || botao.disabled) {
+        return;
+    }
+
+    const item = buscarNoCatalogoPorId(botao.dataset.catalogoId);
+
+    if (item === null) {
+        return;
+    }
+
+    el["nome-item"].value = item.nome;
+    el["quantidade-item"].value = "1";
+
+    preencherCategoria();
+
+    el["quantidade-item"].focus();
+    el["quantidade-item"].select();
 });
 
 function iniciar() {
