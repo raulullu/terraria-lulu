@@ -1,134 +1,148 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Terraria Lulu</title>
-        <meta name="description" content="Aplicativo para organizar o inventário de itens do Terraria.">
-        <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%B3%3C/text%3E%3C/svg%3E">
-        <link rel="stylesheet" href="style.css">
-        <script type="module" src="script.js"></script>
-    </head>
-    <body>
-        <main>
-            <header>
-                <h1>Terraria Lulu</h1>
-                <p>Meu assistente para organizar minhas aventuras no Terraria.</p>
-            </header>
 
-            <section aria-labelledby="titulo-inventario">
-                <h2 id="titulo-inventario">Meu inventário</h2>
-                <p id="total-itens">Registros: 0 | Unidades: 0</p>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terraria Lulu</title>
+    <meta name="description" content="Aplicativo para organizar o inventário de itens do Terraria.">
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%B3%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="script.js"></script>
+</head>
 
-                <form id="formulario-item">
-                    <fieldset>
-                        <legend>Adicionar ao inventário</legend>
-                        <div class="campos">
-                            <div class="campo campo-nome">
-                                <label for="nome-item">Nome do item</label>
-                                <input id="nome-item" type="text" placeholder="Ex.: Espelho Mágico" list="sugestoes-itens" required>
-                                <datalist id="sugestoes-itens"></datalist>
-                            </div>
-                            <div class="campo">
-                                <label for="quantidade-item">Quantidade</label>
-                                <input id="quantidade-item" type="number" min="1" max="9007199254740991" step="1" value="1" required>
-                            </div>
-                            <div class="campo">
-                                <label for="categoria-item">Categoria</label>
-                                <select id="categoria-item"></select>
-                            </div>
-                        </div>
-                        <button id="adicionar-item" class="botao" type="submit">Adicionar item</button>
-                    </fieldset>
-                </form>
+<body>
+    <main>
+        <header>
+            <h1>Terraria Lulu</h1>
+            <p>Meu assistente para organizar minhas aventuras no Terraria.</p>
+        </header>
 
-                <p id="mensagem-item" class="mensagem" role="status" aria-live="polite" aria-atomic="true"></p>
+        <section aria-labelledby="titulo-inventario">
+            <h2 id="titulo-inventario">Meu inventário</h2>
+            <p id="total-itens">Registros: 0 | Unidades: 0</p>
 
-                <section id="recuperacao" class="aviso" aria-labelledby="titulo-recuperacao" hidden>
-                    <h3 id="titulo-recuperacao">O inventário salvo precisa de atenção</h3>
-                    <p>Os dados anteriores foram mantidos. Baixe uma cópia para recuperação ou importe um arquivo JSON válido. Para começar do zero, confirme a substituição dos dados salvos.</p>
-                    <div class="acoes">
-                        <button id="baixar-dados-salvos" class="botao botao-secundario" type="button">Baixar dados para recuperação</button>
-                        <button id="iniciar-novo" class="botao botao-perigo" type="button">Iniciar inventário vazio</button>
-                    </div>
-                </section>
-
-                <section aria-labelledby="titulo-filtros">
-                    <h3 id="titulo-filtros">Buscar e organizar</h3>
+            <form id="formulario-item">
+                <fieldset>
+                    <legend>Adicionar ao inventário</legend>
                     <div class="campos">
                         <div class="campo campo-nome">
-                            <label for="buscar-item">Buscar no inventário</label>
-                            <input id="buscar-item" type="search" placeholder="Ex.: Botas">
+                            <label for="nome-item">Nome do item</label>
+                            <input id="nome-item" type="text" placeholder="Ex.: Espelho Mágico" list="sugestoes-itens"
+                                required>
+                            <datalist id="sugestoes-itens"></datalist>
                         </div>
                         <div class="campo">
-                            <label for="filtrar-categoria">Filtrar por categoria</label>
-                            <select id="filtrar-categoria"></select>
+                            <label for="quantidade-item">Quantidade</label>
+                            <input id="quantidade-item" type="number" min="1" max="9007199254740991" step="1" value="1"
+                                required>
                         </div>
                         <div class="campo">
-                            <label for="ordem-itens">Ordem de exibição</label>
-                            <select id="ordem-itens">
-                                <option value="cadastro">Ordem de cadastro</option>
-                                <option value="az">Nome: A a Z</option>
-                                <option value="za">Nome: Z a A</option>
-                                <option value="quantidade">Maior quantidade</option>
-                                <option value="menor-quantidade">Menor quantidade</option>
-                            </select>
+                            <label for="categoria-item">Categoria</label>
+                            <select id="categoria-item"></select>
                         </div>
                     </div>
-                    <button id="limpar-filtros" class="botao botao-secundario" type="button">Limpar filtros</button>
-                </section>
-
-                <p id="mensagem-busca"></p>
-                <p id="anuncio-busca" class="somente-leitor" role="status" aria-live="polite" aria-atomic="true"></p>
-                <ul id="lista-itens" role="list" aria-label="Itens do inventário"></ul>
-                <div class="acoes">
-                    <button id="remover-ultimo" class="botao botao-perigo" type="button">Remover último cadastrado</button>
-                    <button id="desfazer-remocao" class="botao botao-secundario" type="button" hidden>Desfazer última remoção</button>
-                </div>
-            </section>
-            <section aria-labelledby="titulo-catalogo">
-                 <h2 id="titulo-catalogo">Catálogo de itens</h2>
-
-                 <p>
-                 Consulte os itens disponíveis para cadastrar no inventário.
-                 </p>
-
-                ]<ul id="lista-catalogo" role="list"></ul>
-            </section>
-            <section aria-labelledby="titulo-backup">
-                <h2 id="titulo-backup">Cópias de segurança</h2>
-                <p>Os dados ficam neste navegador. Exporte um arquivo para guardar uma cópia ou usar em outro dispositivo.</p>
-                <button id="exportar-itens" class="botao" type="button">Exportar inventário</button>
-                <div class="campo campo-arquivo">
-                    <label for="importar-itens">Importar inventário em JSON</label>
-                    <input id="importar-itens" type="file" accept=".json,application/json">
-                </div>
-            </section>
-        </main>
-
-        <dialog id="dialogo-confirmacao" aria-labelledby="titulo-confirmacao" aria-describedby="texto-confirmacao">
-            <form method="dialog">
-                <h2 id="titulo-confirmacao">Confirmar substituição</h2>
-                <p id="texto-confirmacao"></p>
-                <div class="acoes">
-                    <button class="botao botao-secundario" value="cancelar" autofocus>Cancelar</button>
-                    <button class="botao botao-perigo" value="confirmar">Confirmar</button>
-                </div>
+                    <button id="adicionar-item" class="botao" type="submit">Adicionar item</button>
+                </fieldset>
             </form>
-        </dialog>
 
-        <dialog id="dialogo-renomear" aria-labelledby="titulo-renomear">
-            <form method="dialog">
-                <h2 id="titulo-renomear">Renomear item</h2>
-                <div class="campo">
-                    <label for="novo-nome">Novo nome</label>
-                    <input id="novo-nome" type="text" required autofocus>
-                </div>
+            <p id="mensagem-item" class="mensagem" role="status" aria-live="polite" aria-atomic="true"></p>
+
+            <section id="recuperacao" class="aviso" aria-labelledby="titulo-recuperacao" hidden>
+                <h3 id="titulo-recuperacao">O inventário salvo precisa de atenção</h3>
+                <p>Os dados anteriores foram mantidos. Baixe uma cópia para recuperação ou importe um arquivo JSON
+                    válido. Para começar do zero, confirme a substituição dos dados salvos.</p>
                 <div class="acoes">
-                    <button class="botao botao-secundario" value="cancelar" formnovalidate>Cancelar</button>
-                    <button class="botao" value="confirmar">Salvar nome</button>
+                    <button id="baixar-dados-salvos" class="botao botao-secundario" type="button">Baixar dados para
+                        recuperação</button>
+                    <button id="iniciar-novo" class="botao botao-perigo" type="button">Iniciar inventário vazio</button>
                 </div>
-            </form>
-        </dialog>
-    </body>
+            </section>
+
+            <section aria-labelledby="titulo-filtros">
+                <h3 id="titulo-filtros">Buscar e organizar</h3>
+                <div class="campos">
+                    <div class="campo campo-nome">
+                        <label for="buscar-item">Buscar no inventário</label>
+                        <input id="buscar-item" type="search" placeholder="Ex.: Botas">
+                    </div>
+                    <div class="campo">
+                        <label for="filtrar-categoria">Filtrar por categoria</label>
+                        <select id="filtrar-categoria"></select>
+                    </div>
+                    <div class="campo">
+                        <label for="ordem-itens">Ordem de exibição</label>
+                        <select id="ordem-itens">
+                            <option value="cadastro">Ordem de cadastro</option>
+                            <option value="az">Nome: A a Z</option>
+                            <option value="za">Nome: Z a A</option>
+                            <option value="quantidade">Maior quantidade</option>
+                            <option value="menor-quantidade">Menor quantidade</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="limpar-filtros" class="botao botao-secundario" type="button">Limpar filtros</button>
+            </section>
+
+            <p id="mensagem-busca"></p>
+            <p id="anuncio-busca" class="somente-leitor" role="status" aria-live="polite" aria-atomic="true"></p>
+            <ul id="lista-itens" role="list" aria-label="Itens do inventário"></ul>
+            <div class="acoes">
+                <button id="remover-ultimo" class="botao botao-perigo" type="button">Remover último cadastrado</button>
+                <button id="desfazer-remocao" class="botao botao-secundario" type="button" hidden>Desfazer última
+                    remoção</button>
+            </div>
+        </section>
+        <section aria-labelledby="titulo-catalogo">
+            <h2 id="titulo-catalogo">Catálogo de itens</h2>
+
+            <p>
+                Consulte os itens disponíveis para cadastrar no inventário.
+            </p>
+            <div class="campo">
+                <label for="buscar-catalogo">Buscar no catálogo</label>
+
+                <input id="buscar-catalogo" type="search" placeholder="Ex.: Espelho">
+            </div>
+            <ul id="lista-catalogo" role="list"></ul>
+        </section>
+        <section aria-labelledby="titulo-backup">
+            <h2 id="titulo-backup">Cópias de segurança</h2>
+            <p>Os dados ficam neste navegador. Exporte um arquivo para guardar uma cópia ou usar em outro dispositivo.
+            </p>
+            <button id="exportar-itens" class="botao" type="button">Exportar inventário</button>
+            <div class="campo campo-arquivo">
+                <label for="importar-itens">Importar inventário em JSON</label>
+                <input id="importar-itens" type="file" accept=".json,application/json">
+            </div>
+        </section>
+    </main>
+
+    <dialog id="dialogo-confirmacao" aria-labelledby="titulo-confirmacao" aria-describedby="texto-confirmacao">
+        <form method="dialog">
+            <h2 id="titulo-confirmacao">Confirmar substituição</h2>
+            <p id="texto-confirmacao"></p>
+            <div class="acoes">
+                <button class="botao botao-secundario" value="cancelar" autofocus>Cancelar</button>
+                <button class="botao botao-perigo" value="confirmar">Confirmar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="dialogo-renomear" aria-labelledby="titulo-renomear">
+        <form method="dialog">
+            <h2 id="titulo-renomear">Renomear item</h2>
+            <div class="campo">
+                <label for="novo-nome">Novo nome</label>
+                <input id="novo-nome" type="text" required autofocus>
+            </div>
+            <div class="acoes">
+                <button class="botao botao-secundario" value="cancelar" formnovalidate>Cancelar</button>
+                <button class="botao" value="confirmar">Salvar nome</button>
+            </div>
+        </form>
+    </dialog>
+</body>
+
 </html>

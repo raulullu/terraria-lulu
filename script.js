@@ -281,5 +281,5 @@ function iniciar() {
     }
     atualizarTela();
 }
-
+el["buscar-catalogo"].addEventListener("input", atualizarTela);
 iniciar();

@@ -3,7 +3,7 @@ import { calcularTotalUnidades } from "./inventario.js";
 import { normalizarTexto } from "./utilidades.js";
 
 export const elementos = Object.fromEntries([
-    "formulario-item", "nome-item", "quantidade-item", "categoria-item", "sugestoes-itens", "lista-catalogo",
+    "formulario-item", "nome-item", "quantidade-item", "categoria-item", "buscar-catalogo", "sugestoes-itens", "lista-catalogo",
     "buscar-item", "filtrar-categoria", "ordem-itens", "limpar-filtros", "lista-itens",
     "total-itens", "mensagem-item", "mensagem-busca", "anuncio-busca", "adicionar-item", "remover-ultimo",
     "desfazer-remocao", "exportar-itens", "importar-itens", "recuperacao", "baixar-dados-salvos",
@@ -51,15 +51,18 @@ function carregarCatalogo(itens) {
 
     lista.replaceChildren();
 
-    for (const itemDoCatalogo of catalogoItens) {
-        let quantidade = 0;
+    const busca = normalizarTexto(
+        elementos["buscar-catalogo"].value
+    );
 
-        for (const itemDoInventario of itens) {
-            if (itemDoInventario.catalogoId === itemDoCatalogo.id) {
-                quantidade = itemDoInventario.quantidade;
-                break;
-            }
+    for (const itemDoCatalogo of catalogoItens) {
+        const nome = normalizarTexto(itemDoCatalogo.nome);
+
+        if (!nome.includes(busca)) {
+            continue;
         }
+
+        let quantidade = 0;
 
         const linha = document.createElement("li");
         const categoria = categoriasItens[itemDoCatalogo.categoria];
