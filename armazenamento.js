@@ -13,8 +13,18 @@ function lerJson(texto, mensagem) {
     }
 }
 
+function lerDadosSalvos(chave) {
+    try {
+        return localStorage.getItem(chave);
+    } catch {
+        throw new Error(
+            "Não foi possível acessar os dados salvos neste navegador."
+        );
+    }
+}
+
 export function carregarInventario() {
-    const dados = localStorage.getItem(CHAVE_INVENTARIO);
+    const dados = lerDadosSalvos(CHAVE_INVENTARIO);
     if (dados === null) return { itens: [], avisos: [] };
     return prepararInventario(lerJson(dados, "O conteúdo salvo não é um JSON válido."), {
         aceitarLegado: true,
@@ -32,7 +42,7 @@ export function salvarInventario(itens) {
 }
 
 export function carregarOrdem() {
-    const ordem = localStorage.getItem(CHAVE_ORDEM);
+    const ordem = lerDadosSalvos(CHAVE_ORDEM);
     return ORDENS.includes(ordem) ? ordem : "cadastro";
 }
 
@@ -78,7 +88,7 @@ export function exportarInventario(itens) {
 }
 
 export function exportarDadosSalvos() {
-    const dados = localStorage.getItem(CHAVE_INVENTARIO);
+    const dados = lerDadosSalvos(CHAVE_INVENTARIO);
     if (dados === null) throw new Error("Não há dados salvos para baixar.");
     baixarArquivo(dados, "terraria-lulu-dados-para-recuperacao.txt", "text/plain");
 }
