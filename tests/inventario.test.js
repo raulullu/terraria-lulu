@@ -75,7 +75,7 @@ test("remove pelo registro de cadastro e preserva a entrada", () => {
 
 test("renomeação bloqueia nomes do catálogo, inclusive equivalentes com acento e espaços", () => {
     const entrada = [manual("Areia")];
-    assert.throws(() => renomearItem(entrada, 0, " PÉDRA "), /nome pertence ao catálogo/);
+    assert.throws(() => renomearItem(entrada, 0, " PÉDRA "), /é um item do catálogo/);
     assert.equal(entrada[0].nome, "Areia");
     assert.equal(renomearItem(entrada, 0, "Areia fina")[0].nome, "Areia fina");
 });
@@ -107,7 +107,7 @@ test("armazenamento protege dados antigos quando leitura ou gravação falham", 
     assert.throws(() => salvarInventario([manual("Novo")]));
     assert.equal(JSON.parse(salvo)[0].nome, "Anterior");
     salvo = "{";
-    assert.throws(() => carregarInventario(), /dados salvos não contêm um JSON válido/);
+    assert.throws(() => carregarInventario(), /O conteúdo salvo não é um JSON válido/);
     assert.equal(salvo, "{");
 });
 

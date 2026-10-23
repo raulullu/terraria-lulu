@@ -46,7 +46,16 @@ export function salvarOrdem(ordem) {
 }
 
 export async function lerArquivoInventario(arquivo) {
-    return prepararInventario(lerJson(await arquivo.text(), "O arquivo não é um JSON válido.")).itens;
+    let texto;
+
+    try {
+        texto = await arquivo.text();
+    } catch {
+        throw new Error("Não foi possível ler o arquivo selecionado.");
+    }
+
+    const dados = lerJson(texto, "O arquivo não é um JSON válido.");
+    return prepararInventario(dados).itens;
 }
 
 export function baixarArquivo(conteudo, nome, tipo) {

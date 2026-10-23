@@ -5,12 +5,20 @@ import { normalizarTexto } from "./utilidades.js";
 export const elementos = Object.fromEntries([
     "formulario-item", "nome-item", "quantidade-item", "categoria-item", "sugestoes-itens",
     "buscar-item", "filtrar-categoria", "ordem-itens", "limpar-filtros", "lista-itens",
-    "total-itens", "mensagem-item", "mensagem-busca", "adicionar-item", "remover-ultimo",
+    "total-itens", "mensagem-item", "mensagem-busca", "anuncio-busca", "adicionar-item", "remover-ultimo",
     "desfazer-remocao", "exportar-itens", "importar-itens", "recuperacao", "baixar-dados-salvos",
     "iniciar-novo", "dialogo-confirmacao", "texto-confirmacao", "dialogo-renomear", "novo-nome",
 ].map((id) => [id, document.getElementById(id)]));
 
 let anuncioPendente;
+let anuncioBuscaPendente;
+
+function anunciarBusca(texto) {
+    clearTimeout(anuncioBuscaPendente);
+    anuncioBuscaPendente = setTimeout(() => {
+        elementos["anuncio-busca"].textContent = texto;
+    }, 350);
+}
 
 export function mostrarMensagem(texto, tipo = "sucesso") {
     clearTimeout(anuncioPendente);
@@ -202,6 +210,7 @@ export function renderizarInventario(itens, ordem, { bloqueado = false, podeDesf
     else if (encontrados.length === 0) mensagem = "Nenhum item encontrado.";
     else if (temFiltros()) mensagem = `Registros encontrados: ${encontrados.length} | Unidades: ${calcularTotalUnidades(encontrados)}`;
     elementos["mensagem-busca"].textContent = mensagem;
+    anunciarBusca(mensagem || "Filtros limpos. Todos os itens estão visíveis.");
     elementos["adicionar-item"].disabled = bloqueado;
     elementos["remover-ultimo"].disabled = bloqueado || itens.length === 0 || temFiltros();
     elementos["desfazer-remocao"].hidden = !podeDesfazer;
